@@ -4,13 +4,16 @@ package dynaLoad;
 // Add logger - each engine will have access to it
 // Add tests
 // to fix sizing related to array
-// how to deal with structs too large to fit in memory?
-// to fix GitHub (use share project under Team) 
-// also source specification doc
-// add seek times to method
+// add seek times to method?
 // the main will be replaced by shell interpret
 // the overwrite fails if data already exists, get better error reporting FIX1
 //	how to subclass exception to get the inner message FIX1
+// how to deal with structs too large to fit in memory?
+
+// tested if !HT! not there
+// tested if file does not exist
+// tested if wrong format of file (at beginning)
+// tested if part of file is wrong format
 
 public class test {
 
@@ -19,11 +22,19 @@ public class test {
 		driver d = new driver( "dynaLoad.HashTableStruct" );
 		try
 		{
-			d.setStore("local2.txt");
+			d.setStore("local5.txt");
 			
-			for( int i = 1; i < 5000; i++ )
+			for( int i = 1; i < 3; i++ )
 			{
-				d.add( i, "ZOSO" + Integer.toString( i ));
+				String s = "XZosoX";
+				for( int j = 1; j < Math.random() * 9; j++ )
+				{
+					s += s;
+				}
+				s = Integer.toString( i ) + s;
+				// random length string
+				
+				d.add( i, s );
 			}
 			
 			d.commit();

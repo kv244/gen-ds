@@ -8,6 +8,7 @@ public class driver {
 	itemOp _engine;
 	Object ptrEngine;
 	Method method;
+	@SuppressWarnings("rawtypes")
 	Class ptrClass;
 	
 	
@@ -55,6 +56,7 @@ public class driver {
 		return _engine.getEngine();
 	}
 	
+	@SuppressWarnings("rawtypes")
 	public void setStore( String store ) throws Exception // several...
 	{
 		Class paramString[] = new Class[1];
@@ -66,6 +68,7 @@ public class driver {
 		// _engine.setStore( store );
 	}
 	
+	@SuppressWarnings("rawtypes")
 	public void add( int i, String v ) throws ItemErrorException, Exception // ..
 	{
 		Class[] paramDi = new Class[1];
@@ -81,6 +84,7 @@ public class driver {
 		return _engine.getItem( i );
 	}
 	
+	@SuppressWarnings("rawtypes")
 	public void del( int i ) throws ItemErrorException, Exception // deal with many...
 	{
 		Class[] paramInt = new Class[1];
@@ -93,12 +97,12 @@ public class driver {
 		// _engine.delItem( i );
 	}
 	
+	@SuppressWarnings("rawtypes")
 	public void commit() throws IOException, FileNotFoundException, Exception // to deal with many...
 	{
 		Class noParams[] = {};
 		this.method = this.ptrClass.getDeclaredMethod( "serialize", noParams );
-		this.method.invoke( ptrEngine, null );
-		
+		this.method.invoke( ptrEngine, (Object[]) null );
 		
 		// _engine.serialize();
 	}

@@ -1,6 +1,5 @@
 package dynaLoad;
 
-
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.io.FileNotFoundException;
@@ -24,13 +23,13 @@ public class HashTableStruct implements itemOp {
 		loadStore();
 	}
 	
-	
 	// Attempt to populate in memory structure with disk data
 	// Silent error if it does not exist, throw out if it exists 
 	// and wrong marker or IO error
 	// Called at init and on switch store
 	// It wipes out the existing in-memory structure 
 	// if it reads the data successfully
+	// TODO refactor the parsing of the items
 	@SuppressWarnings("static-access")
 	private void loadStore()
 	{
@@ -45,67 +44,61 @@ public class HashTableStruct implements itemOp {
 			in = new BufferedReader(new FileReader( this._store ));
 			String magic = in.readLine();
 			
-			if( magic.equals( this._magic ))
+			if( !magic.equals( this._magic ))
+				return;
+			// if file exists and not the same type (!= magic)
+			// same as if file did not exist; no data to load
+						
+			
+			// file exists and same magic, attempt to load data
+			// parse chars are { : }
+			// anything that fails is ignored (eg int that does not convert)
+			
+			/* DEBUG */
+			//System.out.println("__magicFound");
+				
+			String line;
+			loaded = new Hashtable<Integer, String>();
+			
+			while(( line = in.readLine()) != null )
 			{
-				// file exists and same magic, attempt to load data
-				// parse chars are { : }
-				// anything that fails is ignored (eg int that does not convert)
-				
 				/* DEBUG */
-				//System.out.println("__magicFound");
+				//System.out.println("__read_" + line );
 				
-				String line;
-				loaded = new Hashtable<Integer, String>();
-				
-				while(( line = in.readLine()) != null )
+				if( line.startsWith("{") && line.endsWith("}") && line.contains(":"))
 				{
-					/* DEBUG */
-					//System.out.println("__read_" + line );
+					String s1, s2;
+					int separatorPos = line.indexOf(':');
+					int iKey;
 					
-					if( line.startsWith("{") && line.endsWith("}") && line.contains(":"))
+					s1 = line.substring( 1, separatorPos ); // first segment
+					s2 = line.substring( separatorPos + 1, line.length() - 1 ); // second segment
+				
+					try 
 					{
-						String s1, s2;
-						int separatorPos = line.indexOf(':');
-						int iKey;
-						
-						s1 = line.substring( 1, separatorPos );
-						s2 = line.substring( separatorPos + 1, line.length() - 1 );
-					
-						/* DEBUG */
-						//System.out.println("__parseOK_" + s1 + "_" + s2);
-						
-						try
-						{
-							iKey = Integer.parseInt( s1 );
-							loaded.put( iKey, s2 );
-							
-						}
-						catch( NumberFormatException x )
-						{
-							// just ignore line
-						}
-						
-					} // end if; if line does not follow format, throw error
-					// which will fail silently below
-					else
+						iKey = Integer.parseInt( s1 );
+						loaded.put( iKey, s2 );		
+					}
+					catch( NumberFormatException x )
 					{
-						throw new IOException();
+						// just ignore line
 					}
 					
-				} // end while
+				} // end if; if line does not follow format, throw error
+				// which will fail silently below; so if any line cannot be read
+				// the whole is disposed of as the structure does not get populated
+				else
+				{
+					throw new IOException();
+				}
 				
-				if( loaded.size() > 0 )
-					this._struct = loaded;
-				
-				/* DEBUG */
-				System.out.println( "__OVERWRITE__" );
-				
-			} // if file exists and not the same type (!= magic)
-			// same as if file did not exist; no data to load
-			else
-			{
-				return;
-			}
+			} // end while (reading file)
+			
+			/* DEBUG */
+			System.out.println( "__OVERWRITE__" );
+			
+			if( loaded.size() > 0 )
+				this._struct = loaded;		
 			
 		}
 		catch( FileNotFoundException x) // file missing, silent fail 
@@ -116,8 +109,7 @@ public class HashTableStruct implements itemOp {
 		{
 			
 		}
-		
-		
+			
 		return;
 	}
 	
@@ -126,7 +118,6 @@ public class HashTableStruct implements itemOp {
 	{
 		return this._engine;
 	}
-	
 	
 	public void addItem(dataItem di) throws ItemErrorException 
 	{
@@ -196,7 +187,6 @@ public class HashTableStruct implements itemOp {
 		this.loadStore(); 
 		return this.getSize();
 	}
-
 
 	public int getSize() 
 	{
