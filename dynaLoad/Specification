@@ -1,0 +1,100 @@
+/*******************************************************************
+
+This is a simple key-value (integer-string) store
+Demonstrate loading classes dynamically, serialization,
+interfaces, custom exceptions, testing, logger.
+
+There will be separate engines implementing the operations.
+Engines storage will be different and marked by a magic.
+
+Current main is for testing but will be replaced by shell 
+(taking arguments).
+
+Maybe MT later.
+
+Operations:
+- add value
+- delete value
+	- add + delete = replace
+- change store (file)
+- change engine (data struct and likely file format)
+	from the shell 
+	
+- to determine:
+
+	- change store will attempt to load the store
+	(currently defined - either default or other
+	if changed); this will delete what is in memory, if anything
+	
+	- saving will attempt to commit to disk
+		commit operation defined too; this will delete what is on
+		disk, if anything, even if current store is not as loaded from
+					
+Engine should maintain metadata:
+	- size (ok needed)
+	- last search time / items
+
+Key index should be per engine - eg array cant take -1 but hash can.	
+The shell cannot support multiple active engines but a client application can.	
+*******************************************************************/
+
+Test here:
+itemOp hs = new HashTableStruct();
+		// this too triggers a load
+		
+		// itemOp hs = new ArrayListStruct();
+		// here - to choose what class to load dynamically
+		
+		System.out.println( "Set: " + Integer.toString(hs.setStore( "output3.bin" ))); 
+		
+		
+		// add data
+		// this will fail if trying to write on loaded indices
+		
+		for( int i = 100; i < 250; i++ ) // using 0 to accommodate ArrayList
+		{
+			dataItem di = new dataItem( "this" + Integer.toString( i ), i );
+			try
+			{
+				hs.addItem( di );
+			}
+			catch( ItemErrorException x )
+			{
+				System.out.println( "ItemError: " + x.getMessage());
+			}
+		}
+		
+		try
+		{
+			// finding item
+			String val = hs.getItem( 25 );
+			System.out.println( "Found__" + val );
+			
+			// delete
+			hs.delItem( 23 );
+
+			// save
+			hs.serialize();
+			System.out.println( "Saved." );
+			
+			// try loading
+			hs.setStore( "output3.bin" );
+			
+			// get size
+			System.out.println( "Size__" + Integer.toString( hs.getSize() ));
+			
+			// delete and get size
+			hs.delItem( 21 );
+			System.out.println( "DELSize__" + Integer.toString( hs.getSize() ));
+			
+			// try with existing store
+			hs.setStore("output.bin");
+			System.out.println( "Size__" + Integer.toString( hs.getSize() ));
+			
+		}
+		catch( Exception x )
+		{
+			System.out.println( "Exception__" );
+			System.out.println( x.getMessage() );
+		}
+
