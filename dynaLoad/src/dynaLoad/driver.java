@@ -12,6 +12,7 @@ public class driver
 	@SuppressWarnings("rawtypes")
 	Class ptrClass;
 	
+	final static String version = "1.0.0";
 	
 	/*
 	 * Methods:
@@ -24,6 +25,12 @@ public class driver
 	 * delete i
 	 * commit
 	 */
+	
+	// used for compatibility etc
+	public String getVersion()
+	{
+		return version;
+	}
 	
 	// called by ctor
 	private void setEngine( String engine )

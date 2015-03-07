@@ -2,22 +2,19 @@ package dynaLoad;
 
 public class ItemErrorException extends Exception {
 	static final long serialVersionUID = 0;
-
-	private String message;
 	
 	public ItemErrorException()
 	{
-		this.message = "";
+		super();
 	}
 	
 	public ItemErrorException( String sMess )
 	{
-		this.message = sMess;
+		super(sMess);
 	}
 	
-	@Override
-	public String getMessage()
-	{
-		return this.message;
-	}
+	public ItemErrorException(Throwable cause) { super(cause); }
+	
+	public ItemErrorException(String message, Throwable cause) { super(message, cause); }
+	
 }

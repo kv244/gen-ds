@@ -15,7 +15,7 @@ public class HashTableStruct implements itemOp {
 	static final String _engine = "dynaLoad.HashTableStruct";
 	static final String _magic = "!HT!";
 	
-	// TODO Ctor determines loading of store
+	// Ctor determines loading of store
 	public HashTableStruct()
 	{
 		_struct = new Hashtable<Integer, String>();
@@ -29,15 +29,12 @@ public class HashTableStruct implements itemOp {
 	// Called at init and on switch store
 	// It wipes out the existing in-memory structure 
 	// if it reads the data successfully
-	// TODO refactor the parsing of the items
+	
 	@SuppressWarnings("static-access")
 	private void loadStore()
 	{
 		Hashtable<Integer, String> loaded;
-		BufferedReader in; 
-		
-		/* DEBUG */
-		//System.out.println("__loadStore");
+		BufferedReader in = null; 
 		
 		try
 		{
@@ -49,24 +46,16 @@ public class HashTableStruct implements itemOp {
 			// if file exists and not the same type (!= magic)
 			// same as if file did not exist; no data to load
 						
-			
 			// file exists and same magic, attempt to load data
 			// parse chars are { : }
 			// anything that fails is ignored (eg int that does not convert)
-			
-			/* DEBUG */
-			//System.out.println("__magicFound");
 				
 			String line;
 			loaded = new Hashtable<Integer, String>();
 			
-			while(( line = in.readLine()) != null )
-			{
-				/* DEBUG */
-				//System.out.println("__read_" + line );
+			while(( line = in.readLine()) != null ){
 				
-				if( line.startsWith("{") && line.endsWith("}") && line.contains(":"))
-				{
+				if( lineFits( line )){
 					String s1, s2;
 					int separatorPos = line.indexOf(':');
 					int iKey;
@@ -74,13 +63,11 @@ public class HashTableStruct implements itemOp {
 					s1 = line.substring( 1, separatorPos ); // first segment
 					s2 = line.substring( separatorPos + 1, line.length() - 1 ); // second segment
 				
-					try 
-					{
+					try{
 						iKey = Integer.parseInt( s1 );
 						loaded.put( iKey, s2 );		
 					}
-					catch( NumberFormatException x )
-					{
+					catch( NumberFormatException x ){
 						// just ignore line
 					}
 					
@@ -94,12 +81,8 @@ public class HashTableStruct implements itemOp {
 				
 			} // end while (reading file)
 			
-			/* DEBUG */
-			System.out.println( "__OVERWRITE__" );
-			
 			if( loaded.size() > 0 )
 				this._struct = loaded;		
-			
 		}
 		catch( FileNotFoundException x) // file missing, silent fail 
 		{
@@ -109,8 +92,18 @@ public class HashTableStruct implements itemOp {
 		{
 			
 		}
+		finally
+		{
+			try{ in.close(); }catch( Exception x ){}
+		}
 			
 		return;
+	}
+	
+	// refactor: determine if line read in is a valid line
+	private boolean lineFits( String line )
+	{
+		return line.startsWith("{") && line.endsWith("}") && line.contains(":");
 	}
 	
 	@SuppressWarnings("static-access")
@@ -154,7 +147,6 @@ public class HashTableStruct implements itemOp {
 		}
 		else
 			throw new ItemErrorException( "Item " + Integer.toString(iKey) + " not found to delete." );
-
 	}
 
 	@SuppressWarnings("static-access")
@@ -190,7 +182,7 @@ public class HashTableStruct implements itemOp {
 		return res;
 	}
 
-	// returns size of store 
+	// returns size of store after setting it 
 	public int setStore( String store )
 	{
 		this._store = store;
@@ -198,6 +190,7 @@ public class HashTableStruct implements itemOp {
 		return this.getSize();
 	}
 
+	// getSize
 	public int getSize() 
 	{
 		return this._struct.size();

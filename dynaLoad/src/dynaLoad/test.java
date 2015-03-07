@@ -1,13 +1,12 @@
 package dynaLoad;
 
-// TODO finalize methods: getters in HashTable driver
-// loadStore fails for Array
-// the main will be replaced by shell interpret
-// the overwrite fails if data already exists, get better error reporting FIX1
-//	how to subclass exception to get the inner message FIX1
-// to add Swing GUI too to use the driver
-// 	open file, show in tree, switch engine
+import java.lang.reflect.InvocationTargetException;
+
+// TODO:
+// the overwrite fails if data already exists -- TD
 // deal with name / class in driver
+// fix the test harness
+// still fail for overwrite Hash
 
 // tested if !HT! not there
 // tested if file does not exist
@@ -20,8 +19,8 @@ public class test
 	public static void main(String[] args) 
 	{
 
-		// driver d = new driver( "dynaLoad.ArrayListStruct" );
-		driver d = new driver( "dynaLoad.ArrayListStruct" );
+		//driver d = new driver( "dynaLoad.ArrayListStruct" );
+		driver d = new driver( "dynaLoad.HashTableStruct" );
 		
 		try
 		{
@@ -56,15 +55,14 @@ public class test
 			// test save
 			System.out.println( d.commit());
 		}
-		catch( dynaLoad.ItemErrorException y ) //TODO replace FIX1. this is not caught
-		{
+		catch( dynaLoad.ItemErrorException y ){ // this is never trapped, need the next one
 			System.out.println( "Main2: " + y.getMessage());
 		}
-		catch( Exception x )
-		{
-			System.out.println( "Main: " + x.getMessage());
+		catch( InvocationTargetException x ){
+			System.out.println( "Main3: " + x.getTargetException().getMessage());
 		}
-		
+		catch( Exception x ){
+			System.out.println( "Main: " + x.getMessage());
+		}		
 	}
-
 }
