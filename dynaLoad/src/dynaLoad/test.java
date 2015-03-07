@@ -5,25 +5,20 @@ import java.lang.reflect.InvocationTargetException;
 // TODO:
 // the overwrite fails if data already exists -- TD
 // deal with name / class in driver
-// fix the test harness
-// still fail for overwrite Hash
 
 // tested if !HT! not there
 // tested if file does not exist
 // tested if wrong format of file (at beginning)
 // tested if part of file is wrong format
 
-public class test 
-{
+public class test {
 
-	public static void main(String[] args) 
-	{
+	public static void main(String[] args) {
 
 		//driver d = new driver( "dynaLoad.ArrayListStruct" );
 		driver d = new driver( "dynaLoad.HashTableStruct" );
 		
-		try
-		{
+		try {
 			// setStore
 			// d.setStore("local12.txt");
 			

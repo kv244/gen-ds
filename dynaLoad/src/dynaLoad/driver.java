@@ -27,36 +27,29 @@ public class driver
 	 */
 	
 	// used for compatibility etc
-	public String getVersion()
-	{
+	public String getVersion(){
 		return version;
 	}
 	
 	// called by ctor
-	private void setEngine( String engine )
-	{
+	private void setEngine( String engine ){
 		// typical name: dynaLoad.HashTableStruct
-		try
-		{		
+		try{		
 			ptrClass = Class.forName( engine );
 			ptrEngine = ptrClass.newInstance();
 			
 			/* is there a better way to do this */
 		}
-		catch( ClassNotFoundException x )
-		{
+		catch( ClassNotFoundException x ){
 			System.out.println( "Driver__class__" + x.getMessage() );
 		}
-		catch( Exception x )
-		{
+		catch( Exception x ){
 			System.out.println( "Driver__" + x.getMessage() );
 		}
-		
 	}
 	
 	// ctor
-	public driver( String engine )
-	{
+	public driver( String engine ){
 		this.setEngine( engine );
 	}
 	
@@ -65,8 +58,7 @@ public class driver
 		dynaLoad.ItemErrorException,
 		NoSuchMethodException,
 		IllegalAccessException,
-		InvocationTargetException
-	{
+		InvocationTargetException{
 		// return _engine.getEngine();
 		
 		String res = "";
@@ -82,8 +74,7 @@ public class driver
 		dynaLoad.ItemErrorException,
 		NoSuchMethodException,
 		IllegalAccessException,
-		InvocationTargetException
-	{
+		InvocationTargetException{
 		int res = -1;
 		// return _engine.getSize();
 		
@@ -92,7 +83,6 @@ public class driver
 		res = (Integer)this.method.invoke( ptrEngine, (Object[]) null );
 		
 		return res;
-		
 	}
 	
 	@SuppressWarnings("rawtypes")
@@ -100,8 +90,8 @@ public class driver
 		dynaLoad.ItemErrorException,
 		NoSuchMethodException,
 		IllegalAccessException,
-		InvocationTargetException
-	{
+		InvocationTargetException{
+		
 		Class paramString[] = new Class[1];
 		paramString[0] = String.class;
 		
@@ -116,8 +106,7 @@ public class driver
 		dynaLoad.ItemErrorException,
 		NoSuchMethodException,
 		IllegalAccessException,
-		InvocationTargetException
-	{
+		InvocationTargetException{
 		Class[] paramDi = new Class[1];
 		paramDi[0] = dataItem.class;
 		
@@ -131,8 +120,8 @@ public class driver
 	public String get( int i ) throws ItemErrorException,
 		NoSuchMethodException,
 		IllegalAccessException,
-		InvocationTargetException
-	{
+		InvocationTargetException{
+		
 		// return _engine.getItem( i );
 		String res = "";
 		Class paramInt[] = new Class[1];
@@ -148,14 +137,13 @@ public class driver
 	@SuppressWarnings("rawtypes")
 	public void del( int i ) throws ItemErrorException, NoSuchMethodException,
 		IllegalAccessException,
-		InvocationTargetException
-	{
+		InvocationTargetException{
+		
 		Class[] paramInt = new Class[1];
 		paramInt[0] = Integer.TYPE;
 		
 		this.method = this.ptrClass.getDeclaredMethod( "del", paramInt );
 		this.method.invoke( ptrEngine, i );
-		
 		
 		// _engine.delItem( i );
 	}
@@ -164,8 +152,8 @@ public class driver
 	public String commit() throws 
 		IOException, FileNotFoundException, NoSuchMethodException,
 		IllegalAccessException,
-		InvocationTargetException
-	{
+		InvocationTargetException{
+		
 		String res = "";
 		Class noParams[] = {};
 		this.method = this.ptrClass.getDeclaredMethod( "serialize", noParams );
