@@ -2,7 +2,9 @@ package dynaLoad;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Enumeration;
 
 public class ArrayListStruct implements itemOp 
 {
@@ -11,6 +13,9 @@ public class ArrayListStruct implements itemOp
 	static final String _engine = "dynaLoad.ArrayListStruct";
 	static final String _magic = "!AL!";
 	private String _store;
+	public static final String _null = "__null__";
+	// for this engine, query to see if item is deleted or not
+	
 	
 	// ctor, will set store to the default value
 	// and attempt to populate structure
@@ -24,39 +29,83 @@ public class ArrayListStruct implements itemOp
 	@Override
 	public void addItem( dataItem di ) throws ItemErrorException 
 	{
-	
-		if( _struct.size() > 0 && di.getKey() > _struct.size())
-			throw new ItemErrorException( "Out of bounds" );
+		// starts at 0 until size - 1
+		// insert < 0 will fail
+		// insert >= 0 will succeed, so we have to deal with the current
+		// index
+		// this is probably not the best data structure to use, 
+		// it is easier to just add() without index
 		
-		// TODO how to deal with this - sparse array
-		// autogrow?
-		// if autogrow and NULL --> insert
-		// also beware @ get, if returning null it means item not there
+		if( di.getKey() < 0 )
+			throw new ItemErrorException( "Engine does not support negative index." );
 		
-		else
-			_struct.add( di.getKey(), di.getItem());
+		int diff = di.getKey() - _struct.size(); 
+		
+		if( diff >= 0 ) // we must pad
+		{ 
+			for( int i = 0; i <= diff; i++ )
+				_struct.add( _struct.size(), _null );
+		}
+		
+		// deal with the case when this is a placeholder
+		
+		if( _struct.get( di.getKey()).equals( _null ))
+		{
+			_struct.remove( di.getKey());
+		}
+		
+		_struct.add( di.getKey(), di.getItem());
 		
 	}
 
 	@Override
 	public String getItem(int iKey) throws ItemErrorException 
 	{
-		// TODO Auto-generated method stub
-		return null;
+		if( iKey >= _struct.size())
+			throw new ItemErrorException( "Item past size: " + Integer.toString( iKey ) + 
+					" " + Integer.toString(_struct.size()));
+		
+		return _struct.get( iKey );
 	}
 
 	@Override
 	public void delItem(int iKey) throws ItemErrorException 
 	{
-		// TODO Auto-generated method stub
+		// this is just setting the item to _null, as removing it will shift the index
 
+		if( iKey >= _struct.size()) return; // fail silently
+		_struct.remove( iKey );
+		_struct.add( iKey, _null );
+		
 	}
 
 
+	@SuppressWarnings("static-access")
 	@Override
-	public void serialize() throws FileNotFoundException, IOException 
+	public String serialize() throws FileNotFoundException, IOException 
 	{
-		// TODO Auto-generated method stub
+		String res = "Written to " + _store + " records ";
+		PrintWriter out = new PrintWriter( this._store );
+		out.write( this._magic );
+		out.write( "\n" );
+		
+		
+		for( int i = 0; i < _struct.size(); i++ )
+		{
+			String val = _struct.get(i); 
+			if( !val.equals( _null ))
+			{
+				String line = "{" + Integer.toString(i) + "__" + val + "}"; 
+				out.println( line );
+			}
+		}
+		
+		out.flush();
+		out.close();
+		
+		res += Integer.toString( _struct.size());
+		
+		return res;
 		
 	}
 
@@ -78,7 +127,6 @@ public class ArrayListStruct implements itemOp
 	@SuppressWarnings("static-access")
 	public String getEngine() 
 	{
-		// TODO Auto-generated method stub
 		return this._engine;
 	}
 

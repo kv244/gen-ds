@@ -4,7 +4,8 @@ import java.io.FileNotFoundException;
 import java.lang.reflect.*;
 import java.io.IOException;
 
-public class driver {
+public class driver 
+{
 	itemOp _engine;
 	Object ptrEngine;
 	Method method;
@@ -53,13 +54,46 @@ public class driver {
 	}
 	
 	// getEngine
-	public String getEngine()
+	public String getEngine() throws
+		dynaLoad.ItemErrorException,
+		NoSuchMethodException,
+		IllegalAccessException,
+		InvocationTargetException
 	{
-		return _engine.getEngine();
+		// return _engine.getEngine();
+		
+		String res = "";
+		Class noParams[] = {};
+		this.method = this.ptrClass.getDeclaredMethod( "getEngine", noParams );
+		res = this.method.invoke( ptrEngine, (Object[]) null ).toString();
+		
+		return res;
+	}
+	
+	// getSize
+	public int getSize() throws
+		dynaLoad.ItemErrorException,
+		NoSuchMethodException,
+		IllegalAccessException,
+		InvocationTargetException
+	{
+		int res = -1;
+		// return _engine.getSize();
+		
+		Class noParams[] = {};
+		this.method = this.ptrClass.getDeclaredMethod( "getSize", noParams );
+		res = (Integer)this.method.invoke( ptrEngine, (Object[]) null );
+		
+		return res;
+		
 	}
 	
 	@SuppressWarnings("rawtypes")
-	public void setStore( String store ) throws Exception // several...
+	public void setStore( String store ) throws 
+		dynaLoad.ItemErrorException,
+		NoSuchMethodException,
+		IllegalAccessException,
+		InvocationTargetException
 	{
 		Class paramString[] = new Class[1];
 		paramString[0] = String.class;
@@ -86,9 +120,22 @@ public class driver {
 		// _engine.addItem(di);
 	}
 	
-	public String get( int i ) throws ItemErrorException
+	// get element
+	public String get( int i ) throws ItemErrorException,
+		NoSuchMethodException,
+		IllegalAccessException,
+		InvocationTargetException
 	{
-		return _engine.getItem( i );
+		// return _engine.getItem( i );
+		String res = "";
+		Class paramInt[] = new Class[1];
+		paramInt[0] = Integer.TYPE;
+		
+		this.method = this.ptrClass.getDeclaredMethod( "getItem", paramInt );
+		res = this.method.invoke( ptrEngine, i ).toString();
+		
+		return res;
+		
 	}
 	
 	@SuppressWarnings("rawtypes")
@@ -107,14 +154,17 @@ public class driver {
 	}
 	
 	@SuppressWarnings("rawtypes")
-	public void commit() throws IOException, FileNotFoundException, NoSuchMethodException,
+	public String commit() throws 
+		IOException, FileNotFoundException, NoSuchMethodException,
 		IllegalAccessException,
 		InvocationTargetException
 	{
+		String res = "";
 		Class noParams[] = {};
 		this.method = this.ptrClass.getDeclaredMethod( "serialize", noParams );
-		this.method.invoke( ptrEngine, (Object[]) null );
+		res = this.method.invoke( ptrEngine, (Object[]) null ).toString();
 		
+		return res;
 		// _engine.serialize();
 	}
 }

@@ -45,7 +45,7 @@ public class DriverTest {
 	}
 
 	@Test
-	public void testGetEngine() {
+	public void testGetEngine() throws Exception {
 		
 		assertEquals( this.sEngine, pDriver.getEngine() );
 	}

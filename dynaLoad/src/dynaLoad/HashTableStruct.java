@@ -158,7 +158,7 @@ public class HashTableStruct implements itemOp {
 	}
 
 	@SuppressWarnings("static-access")
-	public void serialize() throws FileNotFoundException, IOException 
+	public String serialize() throws FileNotFoundException, IOException 
 	{
 		// Using file to avoid dealing with bytes and string conversion
 		// Newlines separate records, to make reading in easier
@@ -166,6 +166,9 @@ public class HashTableStruct implements itemOp {
 		PrintWriter out = new PrintWriter( this._store );
 		out.write( this._magic );
 		out.write( "\n" );
+		
+		String res = "Written to " + this._store + " records:";
+		int i = 0;
 		
 		Enumeration<Integer> keys = this._struct.keys();
 		
@@ -176,11 +179,15 @@ public class HashTableStruct implements itemOp {
 			
 			String line = "{" + Integer.toString(key) + ":" + val + "}\n";
 			out.print( line );
+			i++;
 		}
 		
 		out.flush();
 		out.close();
 		
+		res += Integer.toString(i);
+		
+		return res;
 	}
 
 	// returns size of store 
