@@ -8,20 +8,26 @@ public class ArrayListStruct implements itemOp
 {
 
 	private ArrayList<String> _struct;
-	static final String _engine = "AL";
+	static final String _engine = "dynaLoad.ArrayListStruct";
 	static final String _magic = "!AL!";
+	private String _store;
 	
+	// ctor, will set store to the default value
+	// and attempt to populate structure
 	public ArrayListStruct()
 	{
-		_struct = new ArrayList<String>();
+		this._struct = new ArrayList<String>();
+		this._store = itemOp.storeDef;
+		loadStore();
 	}
 	
 	@Override
-	public void addItem(dataItem di) throws ItemErrorException {
-		// TODO Auto-generated method stub
-
+	public void addItem( dataItem di ) throws ItemErrorException 
+	{
+	
 		if( _struct.size() > 0 && di.getKey() > _struct.size())
-			throw new ItemErrorException("Out of bounds");
+			throw new ItemErrorException( "Out of bounds" );
+		
 		// TODO how to deal with this - sparse array
 		// autogrow?
 		// if autogrow and NULL --> insert
@@ -46,14 +52,6 @@ public class ArrayListStruct implements itemOp
 
 	}
 
-	public void serialize(String store) throws FileNotFoundException,
-			IOException 
-	{
-		// TODO Auto-generated method stub
-		
-		return;
-		
-	}
 
 	@Override
 	public void serialize() throws FileNotFoundException, IOException 
@@ -63,14 +61,20 @@ public class ArrayListStruct implements itemOp
 	}
 
 	@Override
-	public int setStore(String store) 
+	public int setStore( String store ) 
 	{
-		// TODO Auto-generated method stub
-		
+		this._store = store;
+		this.loadStore(); 
 		return this.getSize();
 		
 	}
 
+	// populate store
+	private void loadStore()
+	{
+		
+	}
+	
 	@SuppressWarnings("static-access")
 	public String getEngine() 
 	{

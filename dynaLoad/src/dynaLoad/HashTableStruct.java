@@ -12,14 +12,14 @@ public class HashTableStruct implements itemOp {
 	
 	private Hashtable<Integer, String> _struct;
 	private String _store;
-	static final String _engine = "HT";
+	static final String _engine = "dynaLoad.HashTableStruct";
 	static final String _magic = "!HT!";
 	
 	// TODO Ctor determines loading of store
 	public HashTableStruct()
 	{
 		_struct = new Hashtable<Integer, String>();
-		_store = itemOp.storeDef;
+		_store = itemOp.storeDef; // default value
 		loadStore();
 	}
 	
@@ -119,6 +119,7 @@ public class HashTableStruct implements itemOp {
 		return this._engine;
 	}
 	
+	// addItem
 	public void addItem(dataItem di) throws ItemErrorException 
 	{
 		// returns item if key already exists or null if it is a new insert
@@ -132,6 +133,7 @@ public class HashTableStruct implements itemOp {
 		}	
 	}
 
+	// getItem
 	public String getItem(int iKey) throws ItemErrorException 
 	{
 		String res;
@@ -141,6 +143,7 @@ public class HashTableStruct implements itemOp {
 			throw new ItemErrorException( "Item " + Integer.toString(iKey) + " not found to retrieve." );
 	}
 
+	// delItem
 	public void delItem(int iKey) throws ItemErrorException 
 	{
 		String res = null;

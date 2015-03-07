@@ -15,7 +15,7 @@ public class driver {
 	/*
 	 * Methods:
 	 * 
-	 * setEngine - will load class dynamically
+	 * setEngine - will load class dynamically (private, called through ctor of driver; one driver only has one engine)
 	 * getEngine
 	 * setStore
 	 * put i, S
@@ -46,11 +46,13 @@ public class driver {
 		
 	}
 	
+	// ctor
 	public driver( String engine )
 	{
 		this.setEngine( engine );
 	}
 	
+	// getEngine
 	public String getEngine()
 	{
 		return _engine.getEngine();
@@ -69,12 +71,17 @@ public class driver {
 	}
 	
 	@SuppressWarnings("rawtypes")
-	public void add( int i, String v ) throws ItemErrorException, Exception // ..
+	public void add( int i, String v ) throws
+		dynaLoad.ItemErrorException,
+		NoSuchMethodException,
+		IllegalAccessException,
+		InvocationTargetException
 	{
 		Class[] paramDi = new Class[1];
 		paramDi[0] = dataItem.class;
 		
 		this.method = this.ptrClass.getDeclaredMethod( "addItem", paramDi );
+		// Class[] e = this.method.getExceptionTypes();
 		this.method.invoke( ptrEngine, new dataItem( v, i ) );
 		// _engine.addItem(di);
 	}
@@ -85,7 +92,9 @@ public class driver {
 	}
 	
 	@SuppressWarnings("rawtypes")
-	public void del( int i ) throws ItemErrorException, Exception // deal with many...
+	public void del( int i ) throws ItemErrorException, NoSuchMethodException,
+		IllegalAccessException,
+		InvocationTargetException
 	{
 		Class[] paramInt = new Class[1];
 		paramInt[0] = Integer.TYPE;
@@ -98,7 +107,9 @@ public class driver {
 	}
 	
 	@SuppressWarnings("rawtypes")
-	public void commit() throws IOException, FileNotFoundException, Exception // to deal with many...
+	public void commit() throws IOException, FileNotFoundException, NoSuchMethodException,
+		IllegalAccessException,
+		InvocationTargetException
 	{
 		Class noParams[] = {};
 		this.method = this.ptrClass.getDeclaredMethod( "serialize", noParams );
