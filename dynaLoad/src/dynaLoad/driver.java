@@ -38,7 +38,7 @@ public class driver
 		}
 		catch( ClassNotFoundException x )
 		{
-			System.out.println( "Driver__" + x.getMessage() );
+			System.out.println( "Driver__class__" + x.getMessage() );
 		}
 		catch( Exception x )
 		{

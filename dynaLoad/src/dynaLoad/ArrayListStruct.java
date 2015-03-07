@@ -18,6 +18,9 @@ public class ArrayListStruct implements itemOp
 	private String _store;
 	public static final String _null = "__null__";
 	// for this engine, query to see if item is deleted or not
+	// this also behaves differently in terms to index
+	// loading in memory then adding
+	// compared to the Hash engine
 	
 	
 	// ctor, will set store to the default value
@@ -159,7 +162,7 @@ public class ArrayListStruct implements itemOp
 					try 
 					{
 						iKey = Integer.parseInt( s1 );
-						loaded.set( iKey, s2 );		
+						loaded.add( iKey, s2 );		
 					}
 					catch( NumberFormatException x )
 					{
