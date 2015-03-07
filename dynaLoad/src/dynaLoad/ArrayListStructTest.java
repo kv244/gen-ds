@@ -21,10 +21,14 @@ public class ArrayListStructTest {
 		sStore = itemOp.storeDef;
 		// delete the default store def, start with empty
 		
-		f = new File( sStore );
-		if( f.exists())
-		{
-			System.out.println( "Deleting default store..." );
+		delFile( sStore );
+		
+	}
+	
+	private void delFile( String sFileName ){
+		f = new File( sFileName );
+		if( f.exists()){
+			System.out.println( "Deleting file: " + sFileName ); 
 			f.delete();
 		}
 	}
@@ -34,6 +38,9 @@ public class ArrayListStructTest {
 		
 		if( f.exists())
 			f.delete();
+		f = null;
+		als = null;
+		di = null;
 	}
 
 	@Test
@@ -51,27 +58,23 @@ public class ArrayListStructTest {
 	public void testAddItem() {
 		
 		int size0 = als.getSize();
+		String added = "archaeopteryx";
 		
-		di = new dataItem( "new One", size0 + 1 );
+		di = new dataItem( added, size0 + 1 );
 		
-		try
-		{
+		try{
 			als.addItem(di);
-			assertEquals( size0 + 1, als.getSize());
+			assertEquals( als.getItem( size0 + 1 ), added );
+			als.delItem( size0 + 1 );
 		}
-		catch( ItemErrorException x )
-		{
+		catch( ItemErrorException x ){
 			fail("Could not add item " + Integer.toString( di.getKey()) + "...\n" + x.getMessage());
 		}
 		
-		
-		fail("Not yet implemented");
 	}
 
 	@Test
-	public void testGetItem() throws ItemErrorException
-	{
-		
+	public void testGetItem() throws ItemErrorException{
 		di = new dataItem( "blob", als.getSize() + 1 );
 		als.addItem( di );
 		assertEquals( "blob" , als.getItem(di.getKey()));
@@ -79,43 +82,59 @@ public class ArrayListStructTest {
 	}
 
 	@Test
-	public void testDelItem() throws ItemErrorException
-	{
+	public void testDelItem() throws ItemErrorException{
 		di = new dataItem( "blob2", als.getSize() + 1 );
 		als.addItem(di);
 		als.delItem(di.getKey());
 		
-		try
-		{
-			als.getItem(di.getKey());
-			fail( "Item Not Deleted" );
+		try{
+			String res = als.getItem(di.getKey());
+			if( !res.equals( als._null )) fail( "Item Not Deleted" );
 		}
-		catch( ItemErrorException x )
-		{
+		catch( ItemErrorException x ){
 			assertTrue(true);
 		}
+	}
+
+	@Test
+	public void testSerialize() throws Exception {
+		// this should test
+		// identity between saved file and expectation?
+		// currently only testing output
+		
+		ArrayListStruct save = new ArrayListStruct();
+		dataItem di2 = new dataItem( "nothing", 0 );
+		String tFile = "boo";
+		String res = "";
+		delFile( tFile );
+		save.setStore( tFile );
+		save.addItem( di2 );
+		res = save.serialize();
+		
+		String exp = "Written to " + tFile + " records 1";
+		save = null; di2 = null; delFile( tFile );
+		assertEquals( res, exp );
 		
 	}
 
-
 	@Test
-	public void testSerialize() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testSetStore() {
+	public void testSetStore()  {
+		
+		String demoStore = "";
+		
+		for( int i = 0; i < 10; i++ ){
+			demoStore += Integer.toString((int)Math.random() * i );
+		}
+		
+		delFile( demoStore );
+		als.setStore( demoStore );
+		assertEquals( als.getSize(), 0 );
 		
 	}
 
 	@Test
 	public void testGetEngine() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetSize() {
-		fail("Not yet implemented");
+		assertEquals( als.getEngine(), "dynaLoad.ArrayListStruct" );
 	}
 
 }
