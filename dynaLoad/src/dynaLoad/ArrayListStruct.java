@@ -1,10 +1,13 @@
 package dynaLoad;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Hashtable;
 
 public class ArrayListStruct implements itemOp 
 {
@@ -69,7 +72,7 @@ public class ArrayListStruct implements itemOp
 	}
 
 	@Override
-	public void delItem(int iKey) throws ItemErrorException 
+	public void delItem( int iKey ) throws ItemErrorException 
 	{
 		// this is just setting the item to _null, as removing it will shift the index
 
@@ -92,12 +95,15 @@ public class ArrayListStruct implements itemOp
 		
 		for( int i = 0; i < _struct.size(); i++ )
 		{
-			String val = _struct.get(i); 
-			if( !val.equals( _null ))
-			{
+			String val = _struct.get(i);
+			//
+			//TODO see loadStore
+			//if( !val.equals( _null ))
+			//{
 				String line = "{" + Integer.toString(i) + "__" + val + "}"; 
 				out.println( line );
-			}
+			//}
+			//
 		}
 		
 		out.flush();
@@ -119,9 +125,71 @@ public class ArrayListStruct implements itemOp
 	}
 
 	// populate store
+	// TODO modify as above to deal with sparse arrays, 
+	// or write NULLs too (current solution)
 	private void loadStore()
 	{
+		ArrayList<String> loaded;
+		BufferedReader in; 
 		
+		try
+		{
+			in = new BufferedReader(new FileReader( this._store ));
+			String magic = in.readLine();
+			
+			if( !magic.equals( this._magic ))
+				return;
+			
+				
+			String line;
+			loaded = new ArrayList<String>();
+			
+			while(( line = in.readLine()) != null )
+			{
+				
+				if( line.startsWith( "{" ) && line.endsWith( "}" ) && line.contains( "__" ))
+				{
+					String s1, s2;
+					int separatorPos = line.indexOf( "__" );
+					int iKey;
+					
+					s1 = line.substring( 1, separatorPos ); // first segment
+					s2 = line.substring( separatorPos + 2, line.length() - 1 ); // second segment
+				
+					try 
+					{
+						iKey = Integer.parseInt( s1 );
+						loaded.set( iKey, s2 );		
+					}
+					catch( NumberFormatException x )
+					{
+						// just ignore line
+					}
+					
+				} // end if; if line does not follow format, throw error
+				// which will fail silently below; so if any line cannot be read
+				// the whole is disposed of as the structure does not get populated
+				else
+				{
+					throw new IOException();
+				}
+				
+			} // end while (reading file)
+			
+			if( loaded.size() > 0 )
+				this._struct = loaded;		
+			
+		}
+		catch( FileNotFoundException x) // file missing, silent fail 
+		{
+			
+		}
+		catch( IOException x) // can't read from file, silent fail
+		{
+			
+		}
+			
+		return;
 	}
 	
 	@SuppressWarnings("static-access")

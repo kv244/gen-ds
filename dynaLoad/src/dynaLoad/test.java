@@ -1,12 +1,10 @@
 package dynaLoad;
 
 // TODO finalize methods: getters in HashTable driver
-// Add logger - each engine will have access to it
-// Add tests - the driver is testable? or each class
+// loadStore fails for Array
 // the main will be replaced by shell interpret
 // the overwrite fails if data already exists, get better error reporting FIX1
 //	how to subclass exception to get the inner message FIX1
-// how to deal with structs too large to fit in memory?
 // to add Swing GUI too to use the driver
 // 	open file, show in tree, switch engine
 // deal with name / class in driver
@@ -23,12 +21,12 @@ public class test
 	{
 
 		// driver d = new driver( "dynaLoad.ArrayListStruct" );
-		driver d = new driver( "dynaLoad.HashTableStruct" );
+		driver d = new driver( "dynaLoad.ArrayListStruct" );
 		
 		try
 		{
 			// setStore
-			d.setStore("local12.txt");
+			// d.setStore("local12.txt");
 			
 			for( int i = 0; i < 3; i++ ) // has to start with 0 for ArrayList ~~~ test with 1 now TODO
 			{
@@ -46,19 +44,25 @@ public class test
 			// test intermediary insert
 			d.add( 11, "middle11" );
 			
-			for( int i = 0; i < d.getSize(); i ++ )
+			/*
+			for( int i = 0; i < d.getSize(); i ++ ) 
+				// this fails for hash, as items are not sequential
+				// it can be improved but need to catch the core error
+			{
 				System.out.println( "__item " + Integer.toString( i ) + " = " + d.get( i ) );
+			}
+			*/
 			
 			// test save
 			System.out.println( d.commit());
 		}
 		catch( dynaLoad.ItemErrorException y ) //TODO replace FIX1. this is not caught
 		{
-			System.out.println( "Main2__ " + y.getMessage());
+			System.out.println( "Main2: " + y.getMessage());
 		}
 		catch( Exception x )
 		{
-			System.out.println( "Main__ " + x.getMessage());
+			System.out.println( "Main: " + x.getMessage());
 		}
 		
 	}
