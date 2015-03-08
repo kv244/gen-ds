@@ -4,6 +4,9 @@ import java.io.FileNotFoundException;
 import java.lang.reflect.*;
 import java.io.IOException;
 
+// TODO repackage completely separated
+// ? how are classes identified from JARs
+
 public class driver 
 {
 	itemOp _engine;
@@ -12,12 +15,13 @@ public class driver
 	@SuppressWarnings("rawtypes")
 	Class ptrClass;
 	
-	final static String version = "1.0.0";
+	final static String version = "1.0.1";
 	
 	/*
 	 * Methods:
 	 * 
-	 * setEngine - will load class dynamically (private, called through ctor of driver; one driver only has one engine)
+	 * setEngine - will load class dynamically 
+	 * 	(private, called through ctor of driver; one driver only has one engine)
 	 * getEngine
 	 * setStore
 	 * put i, S
@@ -31,6 +35,12 @@ public class driver
 		return version;
 	}
 	
+	// return engines
+	// TODO should scan current directory
+	public String[] getEngines(){
+		return new String[] { "dynaLoad.ArrayListStruct", "dynaLoad.HashTableStruct" };
+	}
+	
 	// called by ctor
 	private void setEngine( String engine ){
 		// typical name: dynaLoad.HashTableStruct
@@ -41,10 +51,10 @@ public class driver
 			/* is there a better way to do this */
 		}
 		catch( ClassNotFoundException x ){
-			System.out.println( "Driver__class__" + x.getMessage() );
+			System.out.println( "Driver::ClassNotFound: " + x.getMessage() );
 		}
 		catch( Exception x ){
-			System.out.println( "Driver__" + x.getMessage() );
+			System.out.println( "Driver::Error: " + x.getMessage() );
 		}
 	}
 	
