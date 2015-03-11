@@ -2,17 +2,16 @@ package test;
 
 // TODO add model
 
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import dynaLoad.*;
 
 public class Controller {
 
 	private View m_view;
-	private driver dDriver;
+	@SuppressWarnings("unused")
+	private driver dDriver; //TODO not used yet, needs recompile
 	
 	// Ctor
 	
@@ -61,7 +60,7 @@ public class Controller {
         	m_view.setStatus("about clicked");
 			// TODO recompile to fix error 
 			
-        	/*
+        	/* This uses message box
         	
 			String[] engines = driver.getEngines();
         	
@@ -72,10 +71,10 @@ public class Controller {
 			out = "Engines: " + out + " v." + dDriver.getVersion();	
 				
 			try {
-				_about = out;
-				JOptionPane.showMessageDialog( null, _about );
+				
+				JOptionPane.showMessageDialog( null, out );
 			} catch( Exception x ) {
-				_about = x.getMessage();
+				out = x.getMessage();
 			}
 			*/
 		}
