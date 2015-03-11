@@ -1,5 +1,6 @@
 package test;
 
+// This is the View -- named main for historic reasons
 // Currently, the engines are not packed into the jar and
 // will have to be loaded separately by the driver.
 // TODO beware of driver.new and set engine, may need to modify driver behavior
@@ -33,24 +34,33 @@ public class Main {
 	private static String _defaultEngine = "dynaLoad.HashTableStruct"; 
 	private JTextField textKey;
 	
-	private ActionListener newHandler;
-	private ActionListener saveHandler;
-	private ActionListener openHandler;
-	private ActionListener quitHandler;
-	private ActionListener aboutHandler;
-
+	private JMenuItem mnitmAbout;
+	private JMenuItem mnitmNew;
+	private JMenuItem mnitmOpen;
+	private JMenuItem mnitmSave;
+	private JMenuItem mnitmQuit;
+	private JTree tree;
 	
-	public void setFrame(){
-		this.frame.setVisible(true);
-	}
+	private JTextArea textAreaValue;
+	
+	private JButton btnNew; //TODO provide accessor
+	private JButton btnDel;
+	private JButton btnUpdate;
+	
 	
 	/**
-	 * Create the application.
+	 * Create the application. -- init form
 	 */
 	public Main() {
 		initialize();
 	}
 
+	// accessor for external main program
+	public void setFrame(){
+		this.frame.setVisible(true);
+	}
+	
+	
 	/**
 	 * Initialize the contents of the frame.
 	 * 
@@ -61,15 +71,45 @@ public class Main {
 	 */
 	
 	
-	private JMenuItem mnitmNew;
-	//mnitmNew.addActionListener(newHandler);
-	public void addMnitmNewListener(ActionListener newHandler){
+	// Handler accessors
+	// TODO can this be refactored
+	public void addNewHandler(ActionListener newHandler){
 		mnitmNew.addActionListener(newHandler);
 	}
 	
+	public void addAboutHandler(ActionListener aboutHandler){
+		mnitmAbout.addActionListener(aboutHandler);
+	}
+	
+	public void addOpenHandler(ActionListener openHandler){
+		mnitmAbout.addActionListener(openHandler);
+	}
+	
+	public void addSaveHandler(ActionListener saveHandler){
+		mnitmAbout.addActionListener(saveHandler);
+	}
+	
+	public void addQuitHandler(ActionListener quitHandler){
+		mnitmAbout.addActionListener(quitHandler);
+	}
+	
+	public void addBtnNewHandler(ActionListener btnNewHandler){
+		btnNew.addActionListener(btnNewHandler);
+	}
+	
+	public void addBtnDelHandler(ActionListener btnDelHandler){
+		btnNew.addActionListener(btnDelHandler);
+	}
+	
+	public void addBtnUpdHandler(ActionListener btnUpdHandler){
+		btnNew.addActionListener(btnUpdHandler);
+	}
+	
+	
+	
 	private void initialize() {
 		
-		this.dDriver = null;
+		this.dDriver = null; //TODO replace...
 		
 		frame = new JFrame();
 		frame.setBounds(100, 100, 638, 474);
@@ -82,17 +122,10 @@ public class Main {
 		menuBar.add(mnFile);
 		mnFile.setMnemonic(KeyEvent.VK_F);
 		
-		
 		mnitmNew = new JMenuItem("New");
-		
-		JMenuItem mnitmOpen = new JMenuItem("Open");
-		mnitmOpen.addActionListener(openHandler);
-		
-		JMenuItem mnitmSave = new JMenuItem("Save");
-		mnitmSave.addActionListener(saveHandler);
-		
-		JMenuItem mnitmQuit = new JMenuItem("Quit");
-		mnitmQuit.addActionListener(quitHandler);
+		mnitmOpen = new JMenuItem("Open");
+		mnitmSave = new JMenuItem("Save");
+		mnitmQuit = new JMenuItem("Quit");
 		
 		mnFile.add(mnitmNew);
 		mnFile.add(mnitmOpen);
@@ -102,19 +135,18 @@ public class Main {
 		JMenu mnAbout = new JMenu("About");
 		menuBar.add(mnAbout);
 		
-		JMenuItem mnitmAbout = new JMenuItem("About");
-		mnitmAbout.addActionListener(aboutHandler);
+		mnitmAbout = new JMenuItem("About");
 		mnAbout.add(mnitmAbout);
 		
 		frame.getContentPane().setLayout(null);
 		
-		JTree tree = new JTree();
+		tree = new JTree();
 		tree.setBounds(6, 6, 617, 341);
 		
 		frame.getContentPane().add(tree);
 		
 		lblNewLabel = new JLabel( "Status" );
-		lblNewLabel.setToolTipText("Status");
+		lblNewLabel.setToolTipText("Status"); //TODO provide accessor
 		lblNewLabel.setBounds(6, 408, 617, 16);
 		frame.getContentPane().add(lblNewLabel);
 		
@@ -131,77 +163,25 @@ public class Main {
 		lblValue.setBounds(184, 365, 61, 16);
 		frame.getContentPane().add(lblValue);
 		
-		JButton btnNew = new JButton("New");
+		btnNew = new JButton("New");
 		btnNew.setToolTipText("Add new item");
 		btnNew.setMnemonic('N');
-		btnNew.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
+		
 		btnNew.setBounds(470, 359, 80, 30);
 		frame.getContentPane().add(btnNew);
 		
-		JButton btnDel = new JButton("Del");
+		btnDel = new JButton("Del");
 		btnDel.setToolTipText("Delete selected item in tree");
 		btnDel.setBounds(552, 395, 80, 30);
 		frame.getContentPane().add(btnDel);
 		
-		JButton btnUpdate = new JButton("Update");
+		btnUpdate = new JButton("Update");
 		btnUpdate.setToolTipText("Update existing item");
 		btnUpdate.setBounds(552, 359, 80, 30);
 		frame.getContentPane().add(btnUpdate);
 		
-		JTextArea textAreaValue = new JTextArea();
+		textAreaValue = new JTextArea(); // TODO provide accessor
 		textAreaValue.setBounds(230, 359, 228, 50);
 		frame.getContentPane().add(textAreaValue);
-		
-		// TODO is there a better way to do this
-
-		newHandler = new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				System.out.println( e.toString() ); // handle new
-			}
-		};
-		
-		openHandler = new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				System.out.println( e.toString() ); // handle open
-			}
-		};
-		
-		saveHandler = new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				System.out.println( e.toString() ); // handle save
-			}
-		};
-		
-		quitHandler = new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				System.out.println( e.toString() ); // handle quit
-			}
-		};
-		
-		aboutHandler = new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-				// TODO recompile to fix error 
-				// use message box instead
-				
-				String[] engines = driver.getEngines();
-				String out = "";
-				for( String s : engines ){
-					out += s + "; "; 
-				}
-				out = "Engines: " + out + " v." + dDriver.getVersion();	
-				
-				try{
-					_about = out;
-					JOptionPane.showMessageDialog( null, _about );
-				}
-				catch( Exception x ){
-					_about = x.getMessage();
-				}
-			}
-		};
 	}
 }
