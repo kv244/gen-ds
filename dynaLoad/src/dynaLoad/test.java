@@ -2,7 +2,7 @@ package dynaLoad;
 
 import java.lang.reflect.InvocationTargetException;
 
-// TODO:
+// TODO: HashTable overwrite
 // the overwrite fails if data already exists -- TD
 // deal with name / class in driver
 
@@ -22,8 +22,8 @@ public class test {
 			// setStore
 			// d.setStore("local12.txt");
 			
-			for( int i = 0; i < 3; i++ ) // has to start with 0 for ArrayList ~~~ test with 1 now TODO
-			{
+			for( int i = 0; i < 3; i++ )  {
+				// has to start with 0 for ArrayList ~~~ fixed TODO test with 1 now
 				String s = "List Struct";
 				s = Integer.toString( i ) + s;
 				

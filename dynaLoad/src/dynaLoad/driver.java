@@ -4,7 +4,8 @@ import java.io.FileNotFoundException;
 import java.lang.reflect.*;
 import java.io.IOException;
 
-// TODO repackage completely separated
+// TODO provide iterators in engines
+// to populate tree
 // ? how are classes identified from JARs
 
 public class driver 
@@ -35,9 +36,10 @@ public class driver
 		return version;
 	}
 	
-	// return engines
+	// return engines; static as driver does not need to be instantiated
+	// before checking the engines
 	// TODO should scan current directory
-	public String[] getEngines(){
+	public static String[] getEngines(){
 		return new String[] { "dynaLoad.ArrayListStruct", "dynaLoad.HashTableStruct" };
 	}
 	
