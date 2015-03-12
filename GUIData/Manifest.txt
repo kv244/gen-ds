@@ -1,0 +1,9 @@
+Name: test
+Specification-Title: Java Utility Classes
+Specification-Version: 1.0
+Specification-Vendor: Julian Petrescu
+Implementation-Title: test 
+Implementation-Version: build11
+Implementation-Vendor: Julian Petrescu
+Main-Class: test.Main
+

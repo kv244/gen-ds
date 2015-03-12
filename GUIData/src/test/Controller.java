@@ -4,14 +4,13 @@ package test;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-import dynaLoad.*;
+//import dynaLoad.*;
 
 public class Controller {
 
 	private View m_view;
 	@SuppressWarnings("unused")
-	private driver dDriver; //TODO not used yet, needs recompile
+	//private driver dDriver; //TODO not used yet, needs recompile
 	
 	// Ctor
 	
@@ -51,7 +50,9 @@ public class Controller {
     
     class openHandler implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-        	m_view.setStatus("open clicked");
+        	java.awt.FileDialog fGet = new java.awt.FileDialog(m_view.getFrame(), "Choose file");
+        	fGet.setVisible(true);
+        	m_view.setStatus(fGet.getFile());
         }
     }
     

@@ -1,14 +1,13 @@
 package test;
 
-// This is the View -- named main for historic reasons
 // Currently, the engines are not packed into the jar and
 // will have to be loaded separately by the driver.
 // TODO beware of driver.new and set engine, may need to modify driver behavior
 // as i dont want to open the default store when selecting new file
 
-
 import java.awt.event.KeyEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -18,10 +17,10 @@ import javax.swing.JMenu;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JTextArea;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import java.awt.event.ActionEvent;
-import java.awt.EventQueue;
+import javax.swing.KeyStroke;
+import javax.swing.tree.DefaultMutableTreeNode;
+
+import java.awt.Frame;
 
 
 public class View {
@@ -52,10 +51,13 @@ public class View {
 	}
 
 	// accessor for external main program
-	public void setFrame(){
+	public void setFrame() {
 		this.frame.setVisible(true);
 	}
 	
+	public Frame getFrame() {
+		return this.frame;
+	}
 	
 	/**
 	 * Initialize the contents of the frame.
@@ -105,24 +107,34 @@ public class View {
 		this.lblNewLabel.setText(status);
 	}
 	
-	
 	private void initialize() {
 		
 		frame = new JFrame();
 		frame.setBounds(100, 100, 638, 474);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
+		frame.setTitle("cViewer");
 		
 		JMenuBar menuBar = new JMenuBar();
+		menuBar.setBorderPainted(true);
 		frame.setJMenuBar(menuBar);
 		
 		JMenu mnFile = new JMenu("File");
 		menuBar.add(mnFile);
-		mnFile.setMnemonic(KeyEvent.VK_F);
+		mnFile.setMnemonic(KeyEvent.VK_F); // does not do much on Mac OS X
 		
 		mnitmNew = new JMenuItem("New");
+		mnitmNew.setAccelerator(
+				KeyStroke.getKeyStroke(KeyEvent.VK_N, (java.awt.event.InputEvent.SHIFT_MASK )));
 		mnitmOpen = new JMenuItem("Open");
+		mnitmOpen.setAccelerator(
+				KeyStroke.getKeyStroke(KeyEvent.VK_O, (java.awt.event.InputEvent.SHIFT_MASK )));
 		mnitmSave = new JMenuItem("Save");
+		mnitmSave.setAccelerator(
+				KeyStroke.getKeyStroke(KeyEvent.VK_S, (java.awt.event.InputEvent.SHIFT_MASK )));
 		mnitmQuit = new JMenuItem("Quit");
+		mnitmQuit.setAccelerator(
+				KeyStroke.getKeyStroke(KeyEvent.VK_Q, (java.awt.event.InputEvent.SHIFT_MASK )));
 		
 		mnFile.add(mnitmNew);
 		mnFile.add(mnitmOpen);
@@ -134,11 +146,20 @@ public class View {
 		
 		mnitmAbout = new JMenuItem("About");
 		mnAbout.add(mnitmAbout);
+		mnitmAbout.setAccelerator(
+				KeyStroke.getKeyStroke(KeyEvent.VK_A, (java.awt.event.InputEvent.SHIFT_MASK )));
 		
-		frame.getContentPane().setLayout(null);
 		
-		tree = new JTree();
-		tree.setBounds(6, 6, 617, 341);
+		DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode("Root node");
+		tree = new JTree(rootNode);
+		tree.setBounds(5, 5, 620, 340);
+		rootNode.add(new DefaultMutableTreeNode("Blair"));
+		rootNode.add(new DefaultMutableTreeNode("Lincoln"));
+		DefaultMutableTreeNode childNode = new DefaultMutableTreeNode("Nebraska");
+		childNode.add(new DefaultMutableTreeNode("Omaha"));
+		rootNode.add(childNode);
+		
+		//TODO add 
 		
 		frame.getContentPane().add(tree);
 		
