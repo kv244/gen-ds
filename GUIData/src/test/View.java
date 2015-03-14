@@ -58,17 +58,7 @@ public class View {
 	public Frame getFrame() {
 		return this.frame;
 	}
-	
-	/**
-	 * Initialize the contents of the frame.
-	 * 
-	 * File: New, Open, Save
-	 * About --> Info
-	 * Bottom: file name, engine, result of save|load
-	 * 
-	 */
-	
-	
+		
 	// Handler accessors
 	// TODO can this be refactored
 	public void addNewHandler(ActionListener newHandler){
@@ -106,6 +96,16 @@ public class View {
 	public void setStatus(String status){
 		this.lblNewLabel.setText(status);
 	}
+	
+	
+	/**
+	 * Initialize the contents of the frame.
+	 * 
+	 * File: New, Open, Save
+	 * About --> Info
+	 * Bottom: file name, engine, result of save|load
+	 * 
+	 */
 	
 	private void initialize() {
 		
@@ -148,7 +148,6 @@ public class View {
 		mnAbout.add(mnitmAbout);
 		mnitmAbout.setAccelerator(
 				KeyStroke.getKeyStroke(KeyEvent.VK_A, (java.awt.event.InputEvent.SHIFT_MASK )));
-		
 		
 		DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode("Root node");
 		tree = new JTree(rootNode);
@@ -199,5 +198,7 @@ public class View {
 		textAreaValue = new JTextArea(); // TODO provide accessor
 		textAreaValue.setBounds(230, 359, 228, 50);
 		frame.getContentPane().add(textAreaValue);
+		
+		setStatus("Running");
 	}
 }

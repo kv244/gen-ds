@@ -1,22 +1,31 @@
 package dynaLoad;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.lang.reflect.*;
 import java.io.IOException;
 
 // TODO provide iterators in engines
 // to populate tree
-// ? how are classes identified from JARs
+// ? how are classes identified from JARs √
+// TODO check any static references as these will load the class
 
-public class driver 
-{
+public class driver {
 	itemOp _engine;
 	Object ptrEngine;
 	Method method;
+	
 	@SuppressWarnings("rawtypes")
 	Class ptrClass;
 	
-	final static String version = "1.0.1";
+	final static String version = "1.0.2";
+	
+	// engine identifiers - magic and class
+	final static String[][] engines = {{ "!AL!", "dynaLoad.ArrayListStruct" }, 
+		{ "!HT!", "dynaLoad.HashTableStruct" }};
+	private final static int _MAGIC = 0;
+	private final static int _CLASS = 1;
 	
 	/*
 	 * Methods:
@@ -31,38 +40,55 @@ public class driver
 	 * commit
 	 */
 	
-	// used for compatibility etc
-	public String getVersion(){
-		return version;
+	// constructor
+	// all this does is set/instantiate the engine
+	public driver(String engine) {
+		this.setEngine(engine);
 	}
 	
-	// return engines; static as driver does not need to be instantiated
-	// before checking the engines
-	// TODO should scan current directory
-	public static String[] getEngines(){
-		return new String[] { "dynaLoad.ArrayListStruct", "dynaLoad.HashTableStruct" };
-	}
-	
-	// called by ctor
-	private void setEngine( String engine ){
-		// typical name: dynaLoad.HashTableStruct
+	// setEngine
+	// typical name: dynaLoad.HashTableStruct
+	private void setEngine(String engine){
+		
 		try{		
-			ptrClass = Class.forName( engine );
+			ptrClass = Class.forName(engine);
 			ptrEngine = ptrClass.newInstance();
-			
 			/* is there a better way to do this */
-		}
-		catch( ClassNotFoundException x ){
-			System.out.println( "Driver::ClassNotFound: " + x.getMessage() );
-		}
-		catch( Exception x ){
+		} catch(ClassNotFoundException x) {
+				System.out.println( "Driver::ClassNotFound: " + x.getMessage() );
+		} catch(Exception x){
 			System.out.println( "Driver::Error: " + x.getMessage() );
 		}
 	}
 	
-	// ctor
-	public driver( String engine ){
-		this.setEngine( engine );
+	// used for compatibility etc
+	public static final String getVersion() {
+		return version;
+	}
+	
+	// checks the magic and returns the engine version
+	// or null if file is not a valid storage
+	public static final String checkStorageEngine(String fileName) {
+	
+		for(int i = 0; i < engines.length; i++){
+			String s = engines[i][_MAGIC];
+			if( checkMagic(fileName, s))
+				return engines[i][_CLASS];
+		}
+		return null;
+	}
+	
+	private static final boolean checkMagic( String fileName, String magic ) {
+	
+		try {
+			BufferedReader in = new BufferedReader(new FileReader(fileName));
+			String readMagic = in.readLine();
+			in.close();
+			return ( readMagic.equals( magic ));
+		} catch(Exception x) {
+			return false;
+		}
+			
 	}
 	
 	// getEngine
@@ -98,7 +124,7 @@ public class driver
 	}
 	
 	@SuppressWarnings("rawtypes")
-	public void setStore( String store ) throws 
+	public void setStore(String store) throws 
 		dynaLoad.ItemErrorException,
 		NoSuchMethodException,
 		IllegalAccessException,
@@ -114,7 +140,7 @@ public class driver
 	}
 	
 	@SuppressWarnings("rawtypes")
-	public void add( int i, String v ) throws
+	public void add(int i, String v) throws
 		dynaLoad.ItemErrorException,
 		NoSuchMethodException,
 		IllegalAccessException,
@@ -129,7 +155,7 @@ public class driver
 	}
 	
 	// get element
-	public String get( int i ) throws ItemErrorException,
+	public String get(int i) throws ItemErrorException,
 		NoSuchMethodException,
 		IllegalAccessException,
 		InvocationTargetException{
@@ -147,7 +173,7 @@ public class driver
 	}
 	
 	@SuppressWarnings("rawtypes")
-	public void del( int i ) throws ItemErrorException, NoSuchMethodException,
+	public void del(int i) throws ItemErrorException, NoSuchMethodException,
 		IllegalAccessException,
 		InvocationTargetException{
 		

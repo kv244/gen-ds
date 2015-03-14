@@ -1,8 +1,10 @@
 GUI Use cases:
 
 - when the GUI starts, the driver is not instantiated
+- set file to New will attempt to open the default store
+	will ask the user to choose the engine and instantiate the driver
 - opening a file will set the driver to the file's engine (if compatible), or fail
-- setting a new file will ask the user to choose the engine and instantiate the driver
+	this has a slight problem as instantiating will try to open the default store if the driver isnt already instantiated 
 - choosing save will save the file if the driver is instantiated
 - choosing new|open while the current file is not saved will prompt the user to save
 - after file is loaded, it is shown in the tree
