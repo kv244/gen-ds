@@ -16,7 +16,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JOptionPane;
 
-import dynaLoad.*;
+import dynaLoad.driver; 
 
 public class Controller {
 
@@ -93,14 +93,18 @@ public class Controller {
      */
     class openHandler implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-        	java.awt.FileDialog fGet = new java.awt.FileDialog(m_view.getFrame(), "Choose file");
+        	java.awt.FileDialog fGet = new java.awt.FileDialog(m_view.getFrame(), 
+        			"Choose file");
         	fGet.setVisible(true);
         	String file = fGet.getFile();
-        	
-        	engine = dynaLoad.driver.checkStorageEngine(file);
-        	m_view.setStatus( engine != null ? "Using " + engine : "File not compliant" );
-        	
-        	//TODO complete
+        	if(file != null) {
+        		file = fGet.getDirectory() + file;
+        		engine = driver.checkStorageEngine(file); 
+        		m_view.setStatus( engine != null ? "Using " + engine : "File not compliant, or not found" );
+        		
+        		// TODO complete
+        		
+        	} else { m_view.setStatus("Open canceled"); }
         }
     }
     

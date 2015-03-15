@@ -38,63 +38,7 @@ Key index should be per engine - eg array cant take -1 but hash can.
 The shell cannot support multiple active engines but a client application can.	
 *******************************************************************/
 
-Test here:
-itemOp hs = new HashTableStruct();
-		// this too triggers a load
-		
-		// itemOp hs = new ArrayListStruct();
-		// here - to choose what class to load dynamically
-		
-		System.out.println( "Set: " + Integer.toString(hs.setStore( "output3.bin" ))); 
-		
-		
-		// add data
-		// this will fail if trying to write on loaded indices
-		
-		for( int i = 100; i < 250; i++ ) // using 0 to accommodate ArrayList
-		{
-			dataItem di = new dataItem( "this" + Integer.toString( i ), i );
-			try
-			{
-				hs.addItem( di );
-			}
-			catch( ItemErrorException x )
-			{
-				System.out.println( "ItemError: " + x.getMessage());
-			}
-		}
-		
-		try
-		{
-			// finding item
-			String val = hs.getItem( 25 );
-			System.out.println( "Found__" + val );
-			
-			// delete
-			hs.delItem( 23 );
-
-			// save
-			hs.serialize();
-			System.out.println( "Saved." );
-			
-			// try loading
-			hs.setStore( "output3.bin" );
-			
-			// get size
-			System.out.println( "Size__" + Integer.toString( hs.getSize() ));
-			
-			// delete and get size
-			hs.delItem( 21 );
-			System.out.println( "DELSize__" + Integer.toString( hs.getSize() ));
-			
-			// try with existing store
-			hs.setStore("output.bin");
-			System.out.println( "Size__" + Integer.toString( hs.getSize() ));
-			
-		}
-		catch( Exception x )
-		{
-			System.out.println( "Exception__" );
-			System.out.println( x.getMessage() );
-		}
-
+TODO
+- try iterator for the ArrayList and see if there is scope 
+	for refactoring (see TODO's for iterator at HashStruct)
+- add iterator to interface and then to driver

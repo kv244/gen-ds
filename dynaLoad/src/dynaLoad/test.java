@@ -5,9 +5,6 @@ import java.lang.reflect.InvocationTargetException;
 // TODO: HashTable overwrite
 // the overwrite fails if data already exists -- TD
 // deal with name / class in driver
-// TODO: should be in different packages
-// - driver, struct
-// should include manifest
 
 // tested if !HT! not there
 // tested if file does not exist
@@ -23,25 +20,25 @@ public class test {
 		
 		try {
 			// setStore
-			// d.setStore("local12.txt");
+			d.setStore("newStore10.txt");
 			
-			String s1 = d.checkStorageEngine("local12.txt");
+			//String s1 = d.checkStorageEngine("l.txt");
 			
-			for( int i = 0; i < 3; i++ )  {
+			for( int i = 0; i < 3; i++ ) {
 				// has to start with 0 for ArrayList ~~~ fixed TODO test with 1 now
 				String s = "List Struct";
-				s = Integer.toString( i ) + s;
+				s = Integer.toString(i) + s;
 				
 				// add
-				d.add( i, s );
+				d.add(i, s);
 			}
 			
 			// test padding
 			
-			d.add( 25, "last" );
+			d.add(25, "last");
 			
 			// test intermediary insert
-			d.add( 11, "middle11" );
+			d.add(11, "middle11");
 			
 			/*
 			for( int i = 0; i < d.getSize(); i ++ ) 
@@ -51,6 +48,17 @@ public class test {
 				System.out.println( "__item " + Integer.toString( i ) + " = " + d.get( i ) );
 			}
 			*/
+			
+			// iterator testing
+			dataItem di = null; // has to be initialized!
+			d.iterReset();
+			do {
+				di = d.iter();
+				if(di != null) {
+					System.out.println(Integer.toString(di.getKey()) + "-->" + di.getItem());
+				}
+			} while (di != null);
+			
 			
 			// test save
 			System.out.println( d.commit());

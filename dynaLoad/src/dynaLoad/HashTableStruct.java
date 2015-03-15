@@ -2,6 +2,8 @@ package dynaLoad;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -15,12 +17,37 @@ public class HashTableStruct implements itemOp {
 	static final String _engine = "dynaLoad.HashTableStruct";
 	static final String _magic = "!HT!";
 	
+	private Enumeration<Integer> iterKeys;
+	
 	// Ctor determines loading of store
-	public HashTableStruct()
-	{
+	public HashTableStruct() {
 		_struct = new Hashtable<Integer, String>();
 		_store = itemOp.storeDef; // default value
 		loadStore();
+		
+		iterReset();
+	}
+	
+	// iterator for the data struct
+	// TODO refactor? should this just be exposed, or another
+	// class created?
+	public dataItem next() {
+		dataItem ret = null;
+		try {
+			int nxKey = iterKeys.nextElement();
+			String s = _struct.get(nxKey);
+			if(s != null){
+				ret = new dataItem(s, nxKey);
+				return ret;
+			}
+		} catch(NoSuchElementException x) {
+			// System.out.println("**NOSUCH" + x.getMessage()); filent fail
+		}
+		return null;
+	}
+	
+	public void iterReset() {
+		iterKeys = _struct.keys();
 	}
 	
 	// Attempt to populate in memory structure with disk data
@@ -31,13 +58,11 @@ public class HashTableStruct implements itemOp {
 	// if it reads the data successfully
 	
 	@SuppressWarnings("static-access")
-	private void loadStore()
-	{
+	private void loadStore() {
 		Hashtable<Integer, String> loaded;
 		BufferedReader in = null; 
 		
-		try
-		{
+		try {
 			in = new BufferedReader(new FileReader( this._store ));
 			String magic = in.readLine();
 			
@@ -53,9 +78,9 @@ public class HashTableStruct implements itemOp {
 			String line;
 			loaded = new Hashtable<Integer, String>();
 			
-			while(( line = in.readLine()) != null ){
+			while(( line = in.readLine()) != null ) {
 				
-				if( lineFits( line )){
+				if( lineFits( line )) {
 					String s1, s2;
 					int separatorPos = line.indexOf(':');
 					int iKey;
@@ -63,19 +88,17 @@ public class HashTableStruct implements itemOp {
 					s1 = line.substring( 1, separatorPos ); // first segment
 					s2 = line.substring( separatorPos + 1, line.length() - 1 ); // second segment
 				
-					try{
+					try {
 						iKey = Integer.parseInt( s1 );
 						loaded.put( iKey, s2 );		
-					}
-					catch( NumberFormatException x ){
+					} catch( NumberFormatException x ) {
 						// just ignore line
 					}
 					
 				} // end if; if line does not follow format, throw error
 				// which will fail silently below; so if any line cannot be read
 				// the whole is disposed of as the structure does not get populated
-				else
-				{
+				else {
 					throw new IOException();
 				}
 				
@@ -83,38 +106,31 @@ public class HashTableStruct implements itemOp {
 			
 			if( loaded.size() > 0 )
 				this._struct = loaded;		
-		}
-		catch( FileNotFoundException x) // file missing, silent fail 
+		} catch( FileNotFoundException x) // file missing, silent fail 
 		{
 			
-		}
-		catch( IOException x) // can't read from file, silent fail
+		} catch( IOException x) // can't read from file, silent fail
 		{
 			
-		}
-		finally
-		{
-			try{ in.close(); }catch( Exception x ){}
+		} finally {
+			try{ in.close(); } catch( Exception x ){}
 		}
 			
 		return;
 	}
 	
 	// refactor: determine if line read in is a valid line
-	private boolean lineFits( String line )
-	{
+	private boolean lineFits( String line ) {
 		return line.startsWith("{") && line.endsWith("}") && line.contains(":");
 	}
 	
 	@SuppressWarnings("static-access")
-	public String getEngine()
-	{
+	public String getEngine() {
 		return this._engine;
 	}
 	
 	// addItem
-	public void addItem(dataItem di) throws ItemErrorException 
-	{
+	public void addItem(dataItem di) throws ItemErrorException {
 		// returns item if key already exists or null if it is a new insert
 		// we throw error if it already exists
 		
@@ -127,8 +143,7 @@ public class HashTableStruct implements itemOp {
 	}
 
 	// getItem
-	public String getItem(int iKey) throws ItemErrorException 
-	{
+	public String getItem(int iKey) throws ItemErrorException {
 		String res;
 		if(( res = this._struct.get(iKey)) != null )
 			return res;
