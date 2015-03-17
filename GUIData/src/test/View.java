@@ -111,7 +111,7 @@ public class View {
 		
 		frame = new JFrame();
 		frame.setBounds(100, 100, 638, 474);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		frame.setTitle("cViewer");
 		
