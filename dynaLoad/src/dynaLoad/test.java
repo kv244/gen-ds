@@ -15,12 +15,12 @@ public class test {
 
 	public static void main(String[] args) {
 
-		//driver d = new driver( "dynaLoad.ArrayListStruct" );
-		driver d = new driver( "dynaLoad.HashTableStruct" );
+		driver d = new driver( "dynaLoad.ArrayListStruct" );
+		//driver d = new driver( "dynaLoad.HashTableStruct" );
 		
 		try {
 			// setStore
-			d.setStore("newStore10.txt");
+			d.setStore("ALStore10.txt");
 			
 			//String s1 = d.checkStorageEngine("l.txt");
 			

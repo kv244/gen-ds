@@ -8,6 +8,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.ListIterator;
+import java.util.NoSuchElementException;
 
 public class ArrayListStruct implements itemOp {
 
@@ -21,6 +23,7 @@ public class ArrayListStruct implements itemOp {
 	// loading in memory then adding
 	// compared to the Hash engine
 	
+	private ListIterator<String> iterKeys;
 	
 	// ctor, will set store to the default value
 	// and attempt to populate structure
@@ -29,6 +32,29 @@ public class ArrayListStruct implements itemOp {
 		this._store = itemOp.storeDef;
 		loadStore();
 	}
+	
+	// iterator for the data struct
+	// TODO refactor? should this just be exposed, or another
+	// class created? For now, it needs to be reset before calling
+	@Overrides
+	public dataItem next() {
+		dataItem ret = null;
+		int nxKey = -1;
+		String s = null;
+		
+		if((nxKey = iterKeys.nextIndex()) <= _struct.size()) {
+			s = iterKeys.next();
+			ret = new dataItem(s, nxKey);
+		}
+				
+		return ret;
+	}
+	
+	@Overrides
+	public void iterReset() {
+		iterKeys = _struct.listIterator();
+	}
+	
 	
 	@Override
 	public void addItem( dataItem di ) throws ItemErrorException {

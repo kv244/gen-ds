@@ -19,5 +19,7 @@ public interface itemOp {
 	public int setStore(String store);
 	public String getEngine();
 	public int getSize();
+	public void iterReset(); // iterator reset
+	public dataItem next(); // iterator 
 	
 }

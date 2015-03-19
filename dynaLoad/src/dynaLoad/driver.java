@@ -88,8 +88,7 @@ public class driver {
 		} catch(Exception x) {
 			// TODO log exception
 			return false;
-		}
-			
+		}			
 	}
 	
 	// getEngine
