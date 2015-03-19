@@ -69,11 +69,11 @@ public class Controller {
     }
     
     /* Quit
-     * Prompt to save if file in memory.
+     * TODO Prompt to save if file in memory.
      */
     class quitHandler implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-        	m_view.setStatus("quit clicked");
+        	System.exit(0);
         }
     }
     

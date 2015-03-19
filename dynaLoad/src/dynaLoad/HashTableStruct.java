@@ -30,7 +30,7 @@ public class HashTableStruct implements itemOp {
 	
 	// iterator for the data struct
 	// TODO refactor? should this just be exposed, or another
-	// class created?
+	// class created? For now, it needs to be reset before calling
 	public dataItem next() {
 		dataItem ret = null;
 		try {
@@ -41,7 +41,7 @@ public class HashTableStruct implements itemOp {
 				return ret;
 			}
 		} catch(NoSuchElementException x) {
-			// System.out.println("**NOSUCH" + x.getMessage()); filent fail
+			// System.out.println("**NOSUCH" + x.getMessage()); silent fail
 		}
 		return null;
 	}
@@ -134,8 +134,7 @@ public class HashTableStruct implements itemOp {
 		// returns item if key already exists or null if it is a new insert
 		// we throw error if it already exists
 		
-		if( _struct.putIfAbsent( di.getKey(), di.getItem()) != null )
-		{
+		if( _struct.putIfAbsent( di.getKey(), di.getItem()) != null ) {
 			String errMess = "Item already exists " + Integer.toString( di.getKey());
 			errMess += "\nNew data: " + di.getItem() + "\nOld data: " + _struct.get( di.getKey());
 			throw new ItemErrorException( errMess );
@@ -152,11 +151,9 @@ public class HashTableStruct implements itemOp {
 	}
 
 	// delItem
-	public void delItem(int iKey) throws ItemErrorException 
-	{
+	public void delItem(int iKey) throws ItemErrorException {
 		String res = null;
-		if(( res = this._struct.get(iKey)) != null )
-		{
+		if(( res = this._struct.get(iKey)) != null ) {
 			this._struct.remove(iKey);
 			
 		}
@@ -165,8 +162,7 @@ public class HashTableStruct implements itemOp {
 	}
 
 	@SuppressWarnings("static-access")
-	public String serialize() throws FileNotFoundException, IOException 
-	{
+	public String serialize() throws FileNotFoundException, IOException {
 		// Using file to avoid dealing with bytes and string conversion
 		// Newlines separate records, to make reading in easier
 		
@@ -179,8 +175,7 @@ public class HashTableStruct implements itemOp {
 		
 		Enumeration<Integer> keys = this._struct.keys();
 		
-		while( keys.hasMoreElements() )
-		{
+		while( keys.hasMoreElements() ) {
 			int key = keys.nextElement();
 			String val = this._struct.get(key);
 			
@@ -198,8 +193,7 @@ public class HashTableStruct implements itemOp {
 	}
 
 	// returns size of store after setting it 
-	public int setStore( String store )
-	{
+	public int setStore( String store ) {
 		this._store = store;
 		this.loadStore(); 
 		return this.getSize();
@@ -209,6 +203,5 @@ public class HashTableStruct implements itemOp {
 	public int getSize() 
 	{
 		return this._struct.size();
-	}
-	
+	}	
 }
