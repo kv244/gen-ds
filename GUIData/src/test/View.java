@@ -1,7 +1,5 @@
 package test;
 
-// Currently, the engines are not packed into the jar and
-// will have to be loaded separately by the driver.
 // TODO beware of driver.new and set engine, may need to modify driver behavior
 // as i dont want to open the default store when selecting new file
 
@@ -42,6 +40,7 @@ public class View {
 	private JButton btnDel;
 	private JButton btnUpd;
 	
+	private DefaultMutableTreeNode rootNode;
 	
 	/**
 	 * Create the application. -- init form
@@ -97,6 +96,12 @@ public class View {
 		this.lblNewLabel.setText(status);
 	}
 	
+	// tree accessors
+	
+	// View has no knowledge of data structure
+	public void addNode(String text) {
+		rootNode.add(new DefaultMutableTreeNode(text));
+	}
 	
 	/**
 	 * Initialize the contents of the frame.
@@ -149,16 +154,10 @@ public class View {
 		mnitmAbout.setAccelerator(
 				KeyStroke.getKeyStroke(KeyEvent.VK_A, (java.awt.event.InputEvent.SHIFT_MASK )));
 		
-		DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode("Root node");
+		rootNode = new DefaultMutableTreeNode();
+		rootNode = new DefaultMutableTreeNode("No data");
 		tree = new JTree(rootNode);
 		tree.setBounds(5, 5, 620, 340);
-		rootNode.add(new DefaultMutableTreeNode("Blair"));
-		rootNode.add(new DefaultMutableTreeNode("Lincoln"));
-		DefaultMutableTreeNode childNode = new DefaultMutableTreeNode("Nebraska");
-		childNode.add(new DefaultMutableTreeNode("Omaha"));
-		rootNode.add(childNode);
-		
-		//TODO add 
 		
 		frame.getContentPane().add(tree);
 		

@@ -124,18 +124,20 @@ public class driver {
 	}
 	
 	@SuppressWarnings("rawtypes")
-	public void setStore(String store) throws 
+	public int setStore(String store) throws 
 		dynaLoad.ItemErrorException,
 		NoSuchMethodException,
 		IllegalAccessException,
-		InvocationTargetException{
+		InvocationTargetException {
 		
+		int res = -1;
 		Class paramString[] = new Class[1];
 		paramString[0] = String.class;
 		
-		this.method = this.ptrClass.getDeclaredMethod( "setStore", paramString );
-		this.method.invoke( ptrEngine, new String( store ));
+		this.method = this.ptrClass.getDeclaredMethod("setStore", paramString);
+		res = (Integer)this.method.invoke(ptrEngine, new String(store));
 		
+		return res;
 		// _engine.setStore( store );
 	}
 	

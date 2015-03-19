@@ -18,4 +18,9 @@ public class dataItem {
 		return this.key;
 	}
 	
+	@Override
+	public String toString() {
+		return Integer.toString(key) + "; " + item;
+	}
+	
 }

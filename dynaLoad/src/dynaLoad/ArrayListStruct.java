@@ -34,15 +34,13 @@ public class ArrayListStruct implements itemOp {
 	}
 	
 	// iterator for the data struct
-	// TODO refactor? should this just be exposed, or another
-	// class created? For now, it needs to be reset before calling
-	@Overrides
+	@Override
 	public dataItem next() {
 		dataItem ret = null;
 		int nxKey = -1;
 		String s = null;
 		
-		if((nxKey = iterKeys.nextIndex()) <= _struct.size()) {
+		if((nxKey = iterKeys.nextIndex()) < _struct.size()) {
 			s = iterKeys.next();
 			ret = new dataItem(s, nxKey);
 		}
@@ -50,14 +48,14 @@ public class ArrayListStruct implements itemOp {
 		return ret;
 	}
 	
-	@Overrides
+	@Override
 	public void iterReset() {
 		iterKeys = _struct.listIterator();
 	}
 	
 	
 	@Override
-	public void addItem( dataItem di ) throws ItemErrorException {
+	public void addItem(dataItem di) throws ItemErrorException {
 		// starts at 0 until size - 1
 		// insert < 0 will fail
 		// insert >= 0 will succeed, so we have to deal with the current
@@ -65,15 +63,15 @@ public class ArrayListStruct implements itemOp {
 		// this is probably not the best data structure to use, 
 		// it is easier to just add() without index
 		
-		if( di.getKey() < 0 )
-			throw new ItemErrorException( "Engine does not support negative index." );
+		if(di.getKey() < 0)
+			throw new ItemErrorException("Engine does not support negative index.");
 		
 		int diff = di.getKey() - _struct.size(); 
 		
-		if( diff >= 0 ) { 
+		if(diff >= 0) { 
 			// we must pad
-			for( int i = 0; i <= diff; i++ )
-				_struct.add( _struct.size(), _null );
+			for(int i = 0; i <= diff; i++)
+				_struct.add(_struct.size(), _null);
 		}
 		
 		// deal with the case when this is a placeholder
@@ -140,8 +138,7 @@ public class ArrayListStruct implements itemOp {
 	public int setStore( String store ) {
 		this._store = store;
 		this.loadStore(); 
-		return this.getSize();
-		
+		return this.getSize();	
 	}
 
 	// populate store

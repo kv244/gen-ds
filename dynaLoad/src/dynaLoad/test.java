@@ -15,17 +15,17 @@ public class test {
 
 	public static void main(String[] args) {
 
-		driver d = new driver( "dynaLoad.ArrayListStruct" );
-		//driver d = new driver( "dynaLoad.HashTableStruct" );
+		driver d = new driver( "dynaLoad.ArrayListStruct" ); // TODO this fails on iteration
+		//driver d = new driver("dynaLoad.HashTableStruct");
 		
 		try {
 			// setStore
-			d.setStore("ALStore10.txt");
+			d.setStore(d.getEngine() + "Store11.txt");
 			
 			//String s1 = d.checkStorageEngine("l.txt");
 			
-			for( int i = 0; i < 3; i++ ) {
-				// has to start with 0 for ArrayList ~~~ fixed TODO test with 1 now
+			for( int i = 1; i < 30; i++ ) {
+				// has to start with 0 for ArrayList ~~~ will pad with NULL if not 
 				String s = "List Struct";
 				s = Integer.toString(i) + s;
 				
@@ -33,12 +33,13 @@ public class test {
 				d.add(i, s);
 			}
 			
-			// test padding
+			// test padding for AL
+			// this will fail in HS
 			
-			d.add(25, "last");
+			//d.add(25, "last");
 			
 			// test intermediary insert
-			d.add(11, "middle11");
+			//d.add(11, "middle11");
 			
 			/*
 			for( int i = 0; i < d.getSize(); i ++ ) 
@@ -59,18 +60,19 @@ public class test {
 				}
 			} while (di != null);
 			
+			System.out.println("saving...");		
 			
 			// test save
-			System.out.println( d.commit());
+			System.out.println(d.commit());
 		}
 		catch( dynaLoad.ItemErrorException y ){ // this is never trapped, need the next one
-			System.out.println( "Main2: " + y.getMessage());
+			System.out.println("ERRMain2: " + y.getMessage());
 		}
 		catch( InvocationTargetException x ){
-			System.out.println( "Main3: " + x.getTargetException().getMessage());
+			System.out.println("ERRMain3: " + x.getTargetException().getMessage());
 		}
 		catch( Exception x ){
-			System.out.println( "Main: " + x.getMessage());
+			System.out.println("ERRMain: " + x.getMessage());
 		}		
 	}
 }

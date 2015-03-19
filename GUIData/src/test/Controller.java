@@ -13,10 +13,9 @@ package test;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JOptionPane;
-
 import dynaLoad.driver; 
+import dynaLoad.dataItem;
 
 public class Controller {
 
@@ -65,13 +64,14 @@ public class Controller {
         	} else {
         		dDriver = null;
         	}
+        	//TODO
         }
     }
     
     /* Quit
      * TODO Prompt to save if file in memory.
      */
-    class quitHandler implements ActionListener {
+    public class quitHandler implements ActionListener {
         public void actionPerformed(ActionEvent e) {
         	System.exit(0);
         }
@@ -80,7 +80,7 @@ public class Controller {
     /*Save
      * 
      */
-    class saveHandler implements ActionListener {
+    public class saveHandler implements ActionListener {
         public void actionPerformed(ActionEvent e) {
         	m_view.setStatus("save clicked");
         }
@@ -91,7 +91,7 @@ public class Controller {
      * driver to the file's original engine. Then it will call the renderer for the data.
      * If file load fails or not magic, nothing happens - memory and tree empty.
      */
-    class openHandler implements ActionListener {
+    public class openHandler implements ActionListener {
         public void actionPerformed(ActionEvent e) {
         	java.awt.FileDialog fGet = new java.awt.FileDialog(m_view.getFrame(), 
         			"Choose file");
@@ -100,17 +100,52 @@ public class Controller {
         	if(file != null) {
         		file = fGet.getDirectory() + file;
         		engine = driver.checkStorageEngine(file); 
-        		m_view.setStatus( engine != null ? "Using " + engine : "File not compliant, or not found" );
+        		m_view.setStatus(engine != null 
+        				? "Loading..." 
+        				: "File not compliant, or not found" );
+        		
+        		if(engine == null) return;
         		
         		// TODO complete
         		
+        		// basic tree loading:
+        		// create new driver
+        		// defer loading to driver
+        		// iterate using driver to populate tree
+        		// the check above is unnecessary as the driver will do it,
+        		// but i have to get the engine from file -- TODO refactor?
+        		
+        		dDriver = new driver(engine);
+        		dataItem di = null;
+        		int size = 0;
+        		
+        		try {
+	        		if((size = dDriver.setStore(file)) > 0) { // this call will load the file
+	        			dDriver.iterReset();
+	        			while((di = dDriver.iter()) != null) {
+	        				m_view.addNode(makeNodeText(di));
+	        				m_view.setStatus(engine + ": " + file + "(" + Integer.toString(size)+")");
+	        			}
+	        		}
+        		} catch(Exception x) {
+        			m_view.setStatus("Engine: " + engine + " error " + x.getMessage());
+        		}
+        		
         	} else { m_view.setStatus("Open canceled"); }
         }
+        
+        
     }
+
+    // parent class method, seen by the embedded classes
+    protected String makeNodeText(dataItem di) {
+		return di.toString();
+    }
+
     
-    class aboutHandler implements ActionListener {
+    public class aboutHandler implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-        	m_view.setStatus("Using " + dDriver.getVersion()); //TODO replace with static call
+        	m_view.setStatus("Using " + driver.getVersion()); 
         	// also, if driver loaded, show engine
         }
     }
