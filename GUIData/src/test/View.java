@@ -1,10 +1,8 @@
 package test;
 
-// TODO beware of driver.new and set engine, may need to modify driver behavior
-// as i dont want to open the default store when selecting new file
-
 import java.awt.event.KeyEvent;
 import java.awt.event.ActionListener;
+import java.awt.Frame;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
@@ -17,9 +15,14 @@ import javax.swing.JButton;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.tree.DefaultMutableTreeNode;
-
-import java.awt.Frame;
-
+import java.awt.event.ActionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.event.TreeSelectionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.JScrollPane;
+import javax.swing.tree.TreeNode;
+import javax.swing.border.BevelBorder;
 
 public class View {
 	
@@ -32,13 +35,13 @@ public class View {
 	private JMenuItem mnitmOpen;
 	private JMenuItem mnitmSave;
 	private JMenuItem mnitmQuit;
-	private JTree tree;
 	
 	private JTextArea textAreaValue;
 	
 	private JButton btnNew; 
 	private JButton btnDel;
 	private JButton btnUpd;
+	private JTree tree;
 	
 	private DefaultMutableTreeNode rootNode;
 	
@@ -76,23 +79,23 @@ public class View {
 		mnitmSave.addActionListener(saveHandler);
 	}
 	
-	public void addQuitHandler(ActionListener quitHandler){
+	public void addQuitHandler(ActionListener quitHandler) {
 		mnitmQuit.addActionListener(quitHandler);
 	}
 	
-	public void addBtnNewHandler(ActionListener btnNewHandler){
+	public void addBtnNewHandler(ActionListener btnNewHandler) {
 		btnNew.addActionListener(btnNewHandler);
 	}
 
-	public void addBtnDelHandler(ActionListener btnDelHandler){
+	public void addBtnDelHandler(ActionListener btnDelHandler) {
 		btnDel.addActionListener(btnDelHandler);
 	}
 	
-	public void addBtnUpdHandler(ActionListener btnUpdHandler){
+	public void addBtnUpdHandler(ActionListener btnUpdHandler) {
 		btnUpd.addActionListener(btnUpdHandler);
 	}
 	
-	public void setStatus(String status){
+	public void setStatus(String status) {
 		this.lblNewLabel.setText(status);
 	}
 	
@@ -102,6 +105,33 @@ public class View {
 	public void addNode(String text) {
 		rootNode.add(new DefaultMutableTreeNode(text));
 	}
+	
+	public void addTreeClickHandler(TreeSelectionListener tl) {
+		this.tree.addTreeSelectionListener(tl);
+	}
+	
+	public void setRoot(String text) {
+		rootNode.setUserObject(text);
+	}
+	
+	// text box accessors
+	// TODO trap NullPointer?
+	public String getItem() {
+		return this.textKey.getText();
+	}
+	
+	public String getKey() {
+		return this.textAreaValue.getText();
+	}
+	
+	public void setItem(String text) {
+		this.textKey.setText(text);
+	}
+	
+	public void setKey(String text) {
+		this.textAreaValue.setText(text);
+	}
+	
 	
 	/**
 	 * Initialize the contents of the frame.
@@ -156,14 +186,10 @@ public class View {
 		
 		rootNode = new DefaultMutableTreeNode();
 		rootNode = new DefaultMutableTreeNode("No data");
-		tree = new JTree(rootNode);
-		tree.setBounds(5, 5, 620, 340);
-		
-		frame.getContentPane().add(tree);
 		
 		lblNewLabel = new JLabel( "Status" );
 		lblNewLabel.setToolTipText("Status"); //TODO provide accessor
-		lblNewLabel.setBounds(6, 408, 617, 16);
+		lblNewLabel.setBounds(6, 408, 544, 16);
 		frame.getContentPane().add(lblNewLabel);
 		
 		JLabel lblKey = new JLabel("Key:");
@@ -197,6 +223,16 @@ public class View {
 		textAreaValue = new JTextArea(); // TODO provide accessor
 		textAreaValue.setBounds(230, 359, 228, 50);
 		frame.getContentPane().add(textAreaValue);
+		
+		tree = new JTree(rootNode);
+		
+		//TODO check
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setSize(620, 340);
+		scrollPane.setLocation(5, 5);
+	
+		frame.getContentPane().add(scrollPane);
+		scrollPane.getViewport().add(tree);
 		
 		setStatus("Running");
 	}

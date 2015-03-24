@@ -1,6 +1,5 @@
 package test;
 
-// TODO add model
 // the drivers' setStore will attempt to load the default file,
 // so this should be handled
 // other is with New file, defer setting the store until save is clicked
@@ -8,12 +7,25 @@ package test;
 // loading it
 // the driver is initialized by loading a file, when it picks up the engine from the file
 // or by New, when it uses what the user chose
-// TODO how to populate tree, i --> root, value under it? also refresh cases
+
+// GUI: (p.1)
+// double clicking an existing item in the tree will put it in the text box
+// clicking save (update) will update the item, if an item has been chosen, or message otherwise
+// clicking new will clear the text boxes, to be updated/inserted by save (update)
+// clicking delete will delete the highlighted item in the tree (if any), or message otherwise
+// TODO handle case when clicked but no document in memory (p.2)
+// affected:
+// 	update
+// 	delete
 
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.JOptionPane;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+
 import dynaLoad.driver; 
 import dynaLoad.dataItem;
 
@@ -23,6 +35,7 @@ public class Controller {
 	private driver dDriver = null;
 	private boolean engineSet = false;
 	private String engine = null;
+	private String rootSelected = "root";
 	
 	// Ctor
 	
@@ -37,7 +50,8 @@ public class Controller {
         
         m_view.addBtnDelHandler(new btnDelHandler());
         m_view.addBtnNewHandler(new btnNewHandler());
-        m_view.addBtnUpdHandler(new btnUpdHandler());    
+        m_view.addBtnUpdHandler(new btnUpdHandler());  
+        m_view.addTreeClickHandler(new treeClickHandler());
     }
 
     // menu handlers
@@ -64,7 +78,7 @@ public class Controller {
         	} else {
         		dDriver = null;
         	}
-        	//TODO
+        	//TODO implement new file
         }
     }
     
@@ -102,7 +116,7 @@ public class Controller {
         		engine = driver.checkStorageEngine(file); 
         		m_view.setStatus(engine != null 
         				? "Loading..." 
-        				: "File not compliant, or not found" );
+        				: "File not compliant, or not found");
         		
         		if(engine == null) return;
         		
@@ -124,25 +138,25 @@ public class Controller {
 	        			dDriver.iterReset();
 	        			while((di = dDriver.iter()) != null) {
 	        				m_view.addNode(makeNodeText(di));
-	        				m_view.setStatus(engine + ": " + file + "(" + Integer.toString(size)+")");
 	        			}
+	        			rootSelected = engine + "(" + Integer.toString(size)+")";
+	        			m_view.setStatus(rootSelected);
+        				m_view.setRoot(file); // TODO refresh?
 	        		}
         		} catch(Exception x) {
         			m_view.setStatus("Engine: " + engine + " error " + x.getMessage());
         		}
-        		
         	} else { m_view.setStatus("Open canceled"); }
-        }
-        
-        
+        }     
     }
 
     // parent class method, seen by the embedded classes
+    // transforms data item to printable string
+    // use the reverse to build di form string
     protected String makeNodeText(dataItem di) {
 		return di.toString();
     }
 
-    
     public class aboutHandler implements ActionListener {
         public void actionPerformed(ActionEvent e) {
         	m_view.setStatus("Using " + driver.getVersion()); 
@@ -151,24 +165,48 @@ public class Controller {
     }
     
     // button handlers
-    
-    class btnUpdHandler implements ActionListener {
+    public class btnUpdHandler implements ActionListener {
     	public void actionPerformed(ActionEvent e) {
     		m_view.setStatus("bUpd clicked");
     	}
     }
     
-    class btnDelHandler implements ActionListener {
+    // this relies on data being in the text box
+    // TODO test
+    public class btnDelHandler implements ActionListener {
     	public void actionPerformed(ActionEvent e) {
     		m_view.setStatus("bDel clicked");
+    		int i = -1;
+    		
+    		try {
+    			i = Integer.parseInt(m_view.getKey());
+    			dDriver.del(i);
+    		} catch(NumberFormatException x) { m_view.setStatus("Nothing to delete"); }
+    		catch( Exception x) { m_view.setStatus("Error deleting " + x.getMessage()); }
     	}
     }
     
-    class btnNewHandler implements ActionListener {
+    public class btnNewHandler implements ActionListener {
     	public void actionPerformed(ActionEvent e) {
     		
-    		JOptionPane choice = new JOptionPane(null);
-    		engineSet = true;
+    		m_view.setKey("add key...");
+    		m_view.setItem("add item...");
     	}
+    }
+    
+    // tree event handler
+    // occurs when clicking on tree
+    // handle clicking the header
+    public class treeClickHandler implements TreeSelectionListener {
+		public void valueChanged(TreeSelectionEvent e) {
+			String selectionPath = e.getNewLeadSelectionPath().toString();
+			int startOfNode = selectionPath.indexOf(", ");
+			
+			if(startOfNode != -1) { // non root selected
+				selectionPath = selectionPath.substring(startOfNode) + 2;
+				m_view.setStatus(selectionPath);
+				//TODO add extract, eliminate "]"
+			} else { m_view.setStatus(rootSelected); }
+		}
     }
 }
