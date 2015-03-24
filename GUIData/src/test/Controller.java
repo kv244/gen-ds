@@ -203,7 +203,8 @@ public class Controller {
 			int startOfNode = selectionPath.indexOf(", ");
 			
 			if(startOfNode != -1) { // non root selected
-				selectionPath = selectionPath.substring(startOfNode) + 2;
+				selectionPath = selectionPath.substring(startOfNode+2);
+				selectionPath = selectionPath.replace(']', '\0');
 				m_view.setStatus(selectionPath);
 				//TODO add extract, eliminate "]"
 			} else { m_view.setStatus(rootSelected); }

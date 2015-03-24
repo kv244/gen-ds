@@ -15,17 +15,17 @@ public class test {
 
 	public static void main(String[] args) {
 
-		driver d = new driver( "dynaLoad.ArrayListStruct" ); // TODO this fails on iteration
-		//driver d = new driver("dynaLoad.HashTableStruct");
+		//driver d = new driver( "dynaLoad.ArrayListStruct" ); 
+		driver d = new driver("dynaLoad.HashTableStruct");
 		
 		try {
 			// setStore
-			d.setStore(d.getEngine() + "Store11.txt");
+			d.setStore(d.getEngine() + "BigStore1.txt");
 			
 			//String s1 = d.checkStorageEngine("l.txt");
 			
-			for( int i = 1; i < 30; i++ ) {
-				// has to start with 0 for ArrayList ~~~ will pad with NULL if not 
+			for( int i = 1; i < 1000000; i++ ) {
+				// has to start with 0 for ArrayList ~~~ will pad with NULL if not: that is ok 
 				String s = "List Struct";
 				s = Integer.toString(i) + s;
 				
