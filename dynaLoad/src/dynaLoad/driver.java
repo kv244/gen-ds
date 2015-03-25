@@ -179,7 +179,7 @@ public class driver {
 		Class[] paramDi = new Class[1];
 		paramDi[0] = dataItem.class;
 		
-		this.method = this.ptrClass.getDeclaredMethod( "addItem", paramDi );
+		this.method = this.ptrClass.getDeclaredMethod("addItem", paramDi);
 		// Class[] e = this.method.getExceptionTypes();
 		this.method.invoke( ptrEngine, new dataItem( v, i ) );
 		// _engine.addItem(di);
@@ -202,15 +202,16 @@ public class driver {
 	}
 	
 	@SuppressWarnings("rawtypes")
-	public void del(int i) throws ItemErrorException, NoSuchMethodException,
+	public void del(int i) throws 
+		ItemErrorException, NoSuchMethodException,
 		IllegalAccessException,
-		InvocationTargetException{
+		InvocationTargetException {
 		
 		Class[] paramInt = new Class[1];
 		paramInt[0] = Integer.TYPE;
 		
-		this.method = this.ptrClass.getDeclaredMethod( "del", paramInt );
-		this.method.invoke( ptrEngine, i );
+		this.method = this.ptrClass.getDeclaredMethod("delItem", paramInt);
+		this.method.invoke(ptrEngine, i);
 		
 		// _engine.delItem( i );
 	}

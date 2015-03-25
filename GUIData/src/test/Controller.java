@@ -18,14 +18,15 @@ package test;
 // 	update
 // 	delete
 
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Enumeration;
 
 import javax.swing.JOptionPane;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import dynaLoad.driver; 
 import dynaLoad.dataItem;
 
@@ -38,7 +39,6 @@ public class Controller {
 	private String rootSelected = "root";
 	
 	// Ctor
-	
     Controller(View pView) {
         m_view  = pView;
 
@@ -72,7 +72,7 @@ public class Controller {
         	if(engine.compareTo("2") == 0)
         		engine = "dynaLoad.ArrayListStruct";
         	
-        	if( engine.startsWith("dynaLoad")) {
+        	if(engine.startsWith("dynaLoad")) {
         		dDriver = new driver(engine);
         		System.out.println(engine);
         	} else {
@@ -120,7 +120,7 @@ public class Controller {
         		
         		if(engine == null) return;
         		
-        		// TODO complete
+        		// TODO add state logic
         		
         		// basic tree loading:
         		// create new driver
@@ -149,12 +149,16 @@ public class Controller {
         	} else { m_view.setStatus("Open canceled"); }
         }     
     }
-
+    
     // parent class method, seen by the embedded classes
     // transforms data item to printable string
     // use the reverse to build di form string
     protected String makeNodeText(dataItem di) {
 		return di.toString();
+    }
+    
+    protected dataItem getNodeText(String text) {
+    	return dataItem.toDi(text);
     }
 
     public class aboutHandler implements ActionListener {
@@ -171,6 +175,7 @@ public class Controller {
     	}
     }
     
+    // delete
     // this relies on data being in the text box
     // TODO test
     public class btnDelHandler implements ActionListener {
@@ -181,14 +186,45 @@ public class Controller {
     		try {
     			i = Integer.parseInt(m_view.getKey());
     			dDriver.del(i);
+    			delNode(i);
     		} catch(NumberFormatException x) { m_view.setStatus("Nothing to delete"); }
-    		catch( Exception x) { m_view.setStatus("Error deleting " + x.getMessage()); }
+    		catch(Exception x) { m_view.setStatus("Error deleting " + x.getMessage()); }
     	}
+    	
+    	// finds the node with the given key
+    	private DefaultMutableTreeNode findNode(int key) {
+    		DefaultMutableTreeNode ptrn;
+    		Enumeration<DefaultMutableTreeNode> nodes = m_view.getRoot().children(); 
+     		while(nodes.hasMoreElements()) {
+     			ptrn = nodes.nextElement();
+     			if(dataItem.toDi(ptrn.toString()).getKey() == key)
+     				return ptrn;
+     		}
+    		return null;
+    	}
+    	
+        // this removes the node identified by key
+     	// TODO there might be a better way of doing this,
+     	// make node index = key?
+     	private void delNode(int key) {
+     		DefaultMutableTreeNode ptrn = findNode(key);
+     		DefaultTreeModel model = (DefaultTreeModel)m_view.getTree().getModel();
+     		
+     		if(ptrn != null && ptrn.getParent() != null) {
+     			/*
+     			m_view.getTree().setSelectionPath(null);
+     			model.removeNodeFromParent(ptrn);
+     			*/
+     			m_view.removeNode(ptrn); // push to thread?
+     			m_view.setStatus("Removed " + Integer.toString(key));
+     		} else { m_view.setStatus("Unusual deletion state"); }
+     	}
     }
     
+    // new item
+    // functionality implemented in the update handler
     public class btnNewHandler implements ActionListener {
     	public void actionPerformed(ActionEvent e) {
-    		
     		m_view.setKey("add key...");
     		m_view.setItem("add item...");
     	}
@@ -200,13 +236,22 @@ public class Controller {
     public class treeClickHandler implements TreeSelectionListener {
 		public void valueChanged(TreeSelectionEvent e) {
 			String selectionPath = e.getNewLeadSelectionPath().toString();
+			String textItem = "";
+			String textKey = "";
 			int startOfNode = selectionPath.indexOf(", ");
 			
 			if(startOfNode != -1) { // non root selected
 				selectionPath = selectionPath.substring(startOfNode+2);
 				selectionPath = selectionPath.replace(']', '\0');
-				m_view.setStatus(selectionPath);
-				//TODO add extract, eliminate "]"
+				
+				try { // will throw null exception if failed
+					// TODO add handler for null - defer to driver
+					textItem = dataItem.toDi(selectionPath).getItem();
+					textKey = Integer.toString(dataItem.toDi(selectionPath).getKey());
+					m_view.setStatus(selectionPath);
+				} catch(Exception x){ m_view.setStatus("Cannot parse " + selectionPath); }
+				m_view.setItem(textItem);
+				m_view.setKey(textKey);
 			} else { m_view.setStatus(rootSelected); }
 		}
     }

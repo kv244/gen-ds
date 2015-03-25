@@ -43,8 +43,7 @@ public class ArrayListStruct implements itemOp {
 		if((nxKey = iterKeys.nextIndex()) < _struct.size()) {
 			s = iterKeys.next();
 			ret = new dataItem(s, nxKey);
-		}
-				
+		}	
 		return ret;
 	}
 	
@@ -52,8 +51,7 @@ public class ArrayListStruct implements itemOp {
 	public void iterReset() {
 		iterKeys = _struct.listIterator();
 	}
-	
-	
+		
 	@Override
 	public void addItem(dataItem di) throws ItemErrorException {
 		// starts at 0 until size - 1
@@ -73,14 +71,12 @@ public class ArrayListStruct implements itemOp {
 			for(int i = 0; i <= diff; i++)
 				_struct.add(_struct.size(), _null);
 		}
-		
 		// deal with the case when this is a placeholder
-		
-		if( _struct.get( di.getKey()).equals( _null )) {
-			_struct.remove( di.getKey());
+		if(_struct.get(di.getKey()).equals(_null)) {
+			_struct.remove(di.getKey());
 		}
 		
-		_struct.add( di.getKey(), di.getItem());
+		_struct.add(di.getKey(), di.getItem());
 		
 	}
 
@@ -94,15 +90,14 @@ public class ArrayListStruct implements itemOp {
 	}
 
 	@Override
-	public void delItem( int iKey ) throws ItemErrorException {
+	public void delItem(int iKey) throws ItemErrorException {
 		// this is just setting the item to _null, as removing it will shift the index
 
-		if( iKey >= _struct.size()) return; // fail silently
-		_struct.remove( iKey );
-		_struct.add( iKey, _null );
+		if(iKey >= _struct.size()) return; // fail silently
+		_struct.remove(iKey);
+		_struct.add(iKey, _null);
 		
 	}
-
 
 	@SuppressWarnings("static-access")
 	@Override
@@ -111,8 +106,7 @@ public class ArrayListStruct implements itemOp {
 		PrintWriter out = new PrintWriter( this._store );
 		out.write( this._magic );
 		out.write( "\n" );
-		
-		
+				
 		for( int i = 0; i < _struct.size(); i++ ) {
 			String val = _struct.get(i);
 			//
@@ -129,9 +123,7 @@ public class ArrayListStruct implements itemOp {
 		out.close();
 		
 		res += Integer.toString( _struct.size());
-		
-		return res;
-		
+		return res;	
 	}
 
 	@Override
@@ -147,23 +139,23 @@ public class ArrayListStruct implements itemOp {
 	// the magic check is replicated in the driver
 	private void loadStore() {
 		ArrayList<String> loaded;
-		BufferedReader in; 
+		BufferedReader in = null; 
 		
 		try {
 			in = new BufferedReader(new FileReader( this._store ));
 			String magic = in.readLine();
 			
-			if( !magic.equals( this._magic ))
+			if(!magic.equals(ArrayListStruct._magic)) {
+				in.close();
 				return;
+			}
 				
 			String line;
 			loaded = new ArrayList<String>();
 			
-			while(( line = in.readLine()) != null )
-			{
+			while((line = in.readLine()) != null) {
 				
-				if( line.startsWith( "{" ) && line.endsWith( "}" ) && line.contains( "__" ))
-				{
+				if(line.startsWith( "{" ) && line.endsWith( "}" ) && line.contains( "__" )) {
 					String s1, s2;
 					int separatorPos = line.indexOf( "__" );
 					int iKey;
@@ -171,12 +163,10 @@ public class ArrayListStruct implements itemOp {
 					s1 = line.substring( 1, separatorPos ); // first segment
 					s2 = line.substring( separatorPos + 2, line.length() - 1 ); // second segment
 				
-					try 
-					{
+					try {
 						iKey = Integer.parseInt( s1 );
 						loaded.add( iKey, s2 );		
-					}
-					catch( NumberFormatException x )
+					} catch( NumberFormatException x )
 					{
 						// just ignore line
 					}
@@ -193,9 +183,9 @@ public class ArrayListStruct implements itemOp {
 			if( loaded.size() > 0 )
 				this._struct = loaded;		
 			
-		} catch( FileNotFoundException x) {} // file missing, silent fail 
-		catch( IOException x) {} // can't read from file, silent fail
-		
+		} catch(FileNotFoundException x) {} // file missing, silent fail 
+		catch(IOException x) {} // can't read from file, silent fail
+		finally{ try { in.close(); } catch(Exception x){}}
 		return;
 	}
 	
@@ -206,8 +196,6 @@ public class ArrayListStruct implements itemOp {
 
 	@Override
 	public int getSize() {
-		
 		return this._struct.size();
 	}
-
 }
