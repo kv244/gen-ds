@@ -78,19 +78,19 @@ public class HashTableStruct implements itemOp {
 			String line;
 			loaded = new Hashtable<Integer, String>();
 			
-			while(( line = in.readLine()) != null ) {
+			while((line = in.readLine()) != null) {
 				
-				if( lineFits( line )) {
+				if(lineFits(line)) {
 					String s1, s2;
 					int separatorPos = line.indexOf(':');
 					int iKey;
 					
-					s1 = line.substring( 1, separatorPos ); // first segment
-					s2 = line.substring( separatorPos + 1, line.length() - 1 ); // second segment
+					s1 = line.substring(1, separatorPos); // first segment
+					s2 = line.substring(separatorPos + 1, line.length() - 1); // second segment
 				
 					try {
-						iKey = Integer.parseInt( s1 );
-						loaded.put( iKey, s2 );		
+						iKey = Integer.parseInt(s1);
+						loaded.put(iKey, s2);		
 					} catch( NumberFormatException x ) {
 						// just ignore line
 					}
@@ -106,12 +106,10 @@ public class HashTableStruct implements itemOp {
 			
 			if( loaded.size() > 0 )
 				this._struct = loaded;		
-		} catch( FileNotFoundException x) // file missing, silent fail 
-		{
-			
-		} catch( IOException x) // can't read from file, silent fail
-		{
-			
+		} catch( FileNotFoundException x)  {
+			// file missing, silent fail
+		} catch( IOException x) {
+			// can't read from file, silent fail
 		} finally {
 			try{ in.close(); } catch( Exception x ){}
 		}
@@ -120,7 +118,7 @@ public class HashTableStruct implements itemOp {
 	}
 	
 	// refactor: determine if line read in is a valid line
-	private boolean lineFits( String line ) {
+	private boolean lineFits(String line) {
 		return line.startsWith("{") && line.endsWith("}") && line.contains(":");
 	}
 	
@@ -167,8 +165,8 @@ public class HashTableStruct implements itemOp {
 		// Newlines separate records, to make reading in easier
 		
 		PrintWriter out = new PrintWriter( this._store );
-		out.write( this._magic );
-		out.write( "\n" );
+		out.write(this._magic);
+		out.write("\n");
 		
 		String res = "Written to " + this._store + " records:";
 		int i = 0;
@@ -200,8 +198,7 @@ public class HashTableStruct implements itemOp {
 	}
 
 	// getSize
-	public int getSize() 
-	{
+	public int getSize() {
 		return this._struct.size();
 	}	
 }

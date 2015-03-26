@@ -20,7 +20,7 @@ public class driver {
 	@SuppressWarnings("rawtypes")
 	Class ptrClass;
 	
-	final static String version = "1.0.2";
+	final static String version = "1.0.3";
 	
 	// engine identifiers - magic and class
 	final static String[][] engines = {{ "!AL!", "dynaLoad.ArrayListStruct" }, 
@@ -158,10 +158,9 @@ public class driver {
 		NoSuchMethodException,
 		IllegalAccessException,
 		InvocationTargetException {
-	
+		
 		Class noParams[] = {};
 		dataItem ret = null;
-		
 		this.method = this.ptrClass.getDeclaredMethod("next", noParams);
 		ret = (dataItem)this.method.invoke(ptrEngine, (Object[]) null);
 	
@@ -175,13 +174,13 @@ public class driver {
 		dynaLoad.ItemErrorException,
 		NoSuchMethodException,
 		IllegalAccessException,
-		InvocationTargetException{
+		InvocationTargetException {
+		
 		Class[] paramDi = new Class[1];
 		paramDi[0] = dataItem.class;
-		
 		this.method = this.ptrClass.getDeclaredMethod("addItem", paramDi);
 		// Class[] e = this.method.getExceptionTypes();
-		this.method.invoke( ptrEngine, new dataItem( v, i ) );
+		this.method.invoke(ptrEngine, new dataItem(v, i));
 		// _engine.addItem(di);
 	}
 	
@@ -195,7 +194,6 @@ public class driver {
 		String res = "";
 		Class paramInt[] = new Class[1];
 		paramInt[0] = Integer.TYPE;
-		
 		this.method = this.ptrClass.getDeclaredMethod( "getItem", paramInt );
 		res = this.method.invoke(ptrEngine, i).toString();
 		return res;
@@ -209,7 +207,6 @@ public class driver {
 		
 		Class[] paramInt = new Class[1];
 		paramInt[0] = Integer.TYPE;
-		
 		this.method = this.ptrClass.getDeclaredMethod("delItem", paramInt);
 		this.method.invoke(ptrEngine, i);
 		

@@ -7,14 +7,13 @@ package test;
 
 import java.awt.EventQueue;
 
-import javax.swing.*;
-
 public class Main {
 
 public static void main(String[] args) {
 	
 	View view = new View();
-	Controller 	controller = new Controller(view); //needs to be instantiated for the handlers to work
+	Controller 	controller = new Controller(view); 
+		//needs to be instantiated for the handlers to work
 	        	        
    	EventQueue.invokeLater(new Runnable() {
    			public void run() {

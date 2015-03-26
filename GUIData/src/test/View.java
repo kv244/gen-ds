@@ -15,14 +15,20 @@ import javax.swing.JButton;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.MutableTreeNode;
+
 import java.awt.event.ActionEvent;
+
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
+
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
 import javax.swing.JScrollPane;
 import javax.swing.tree.TreeNode;
 import javax.swing.border.BevelBorder;
+import javax.swing.tree.DefaultTreeModel;
 
 public class View {
 	
@@ -103,9 +109,28 @@ public class View {
 	
 	// View has no knowledge of data structure
 	public void addNode(String text) {
-		rootNode.add(new DefaultMutableTreeNode(text));
+		//TODO trying this, and it provides index, so it can be refactored for deletes etx
+		//rootNode.add(new DefaultMutableTreeNode(text));
+		
+		DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
+		model.insertNodeInto(new DefaultMutableTreeNode(text), rootNode, rootNode.getChildCount());
 	}
 	
+	public void treeRepaint(DefaultMutableTreeNode node) {
+		DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
+		if(node==null)model.reload();
+		else model.reload(node);
+	}
+	
+	// used by the controller mostly to remove nodes
+	public DefaultMutableTreeNode getRoot() {
+		return rootNode;
+	}
+	
+	public JTree getTree() {
+		return tree;
+	}
+
 	public void addTreeClickHandler(TreeSelectionListener tl) {
 		this.tree.addTreeSelectionListener(tl);
 	}
@@ -117,19 +142,19 @@ public class View {
 	// text box accessors
 	// TODO trap NullPointer?
 	public String getItem() {
-		return this.textKey.getText();
-	}
-	
-	public String getKey() {
 		return this.textAreaValue.getText();
 	}
 	
+	public String getKey() {		
+		return this.textKey.getText();
+	}
+	
 	public void setItem(String text) {
-		this.textKey.setText(text);
+		this.textAreaValue.setText(text);
 	}
 	
 	public void setKey(String text) {
-		this.textAreaValue.setText(text);
+		this.textKey.setText(text);
 	}
 	
 	
@@ -145,7 +170,7 @@ public class View {
 	private void initialize() {
 		
 		frame = new JFrame();
-		frame.setBounds(100, 100, 638, 474);
+		frame.setBounds(100, 100, 640, 475);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		frame.setTitle("cViewer");
@@ -188,7 +213,7 @@ public class View {
 		rootNode = new DefaultMutableTreeNode("No data");
 		
 		lblNewLabel = new JLabel( "Status" );
-		lblNewLabel.setToolTipText("Status"); //TODO provide accessor
+		lblNewLabel.setToolTipText("Status"); 
 		lblNewLabel.setBounds(6, 408, 544, 16);
 		frame.getContentPane().add(lblNewLabel);
 		
@@ -201,7 +226,7 @@ public class View {
 		frame.getContentPane().add(textKey);
 		textKey.setColumns(10);
 		
-		JLabel lblValue = new JLabel("Value:");
+		JLabel lblValue = new JLabel("Item:");
 		lblValue.setBounds(184, 365, 61, 16);
 		frame.getContentPane().add(lblValue);
 		
@@ -226,13 +251,12 @@ public class View {
 		
 		tree = new JTree(rootNode);
 		
-		//TODO check
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setSize(620, 340);
 		scrollPane.setLocation(5, 5);
 	
 		frame.getContentPane().add(scrollPane);
-		scrollPane.getViewport().add(tree);
+		scrollPane.setViewportView(tree);
 		
 		setStatus("Running");
 	}

@@ -23,4 +23,16 @@ public class dataItem {
 		return Integer.toString(key) + "; " + item;
 	}
 	
+	// opposite of the above, returns null if illegal
+	public static final dataItem toDi(String text) {
+		dataItem diRet = null;
+		int split = text.indexOf("; ");
+		try {
+			int key = Integer.parseInt(text.substring(0, split));
+			String item = text.substring(split+2);
+			diRet = new dataItem(item, key);
+		} catch(Exception x) { }
+		
+		return diRet;
+	}
 }

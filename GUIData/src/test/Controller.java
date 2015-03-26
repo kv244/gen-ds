@@ -1,5 +1,4 @@
 package test;
-
 // the drivers' setStore will attempt to load the default file,
 // so this should be handled
 // other is with New file, defer setting the store until save is clicked
@@ -17,16 +16,19 @@ package test;
 // affected:
 // 	update
 // 	delete
+// TODO if _NEW, do not allow the key box to be modified
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Enumeration;
 
 import javax.swing.JOptionPane;
+import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+
 import dynaLoad.driver; 
 import dynaLoad.dataItem;
 
@@ -37,6 +39,8 @@ public class Controller {
 	private boolean engineSet = false;
 	private String engine = null;
 	private String rootSelected = "root";
+	private enum buttonAction{ _NEW, _TREE, _NONE };
+	private buttonAction updateState;
 	
 	// Ctor
     Controller(View pView) {
@@ -52,6 +56,8 @@ public class Controller {
         m_view.addBtnNewHandler(new btnNewHandler());
         m_view.addBtnUpdHandler(new btnUpdHandler());  
         m_view.addTreeClickHandler(new treeClickHandler());
+        
+        updateState = buttonAction._NONE;
     }
 
     // menu handlers
@@ -96,7 +102,11 @@ public class Controller {
      */
     public class saveHandler implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-        	m_view.setStatus("save clicked");
+        //TODO this is a basic handler, needs more work, just for testing
+        	try {
+        		dDriver.commit();
+        		m_view.setStatus("Saved");
+        	} catch(Exception x) { m_view.setStatus("Error saving " + x.getMessage()); }
         }
     }
     
@@ -120,7 +130,7 @@ public class Controller {
         		
         		if(engine == null) return;
         		
-        		// TODO add state logic
+        		// TODO add state logic for memory 
         		
         		// basic tree loading:
         		// create new driver
@@ -152,7 +162,7 @@ public class Controller {
     
     // parent class method, seen by the embedded classes
     // transforms data item to printable string
-    // use the reverse to build di form string
+    // use the reverse to build di from string
     protected String makeNodeText(dataItem di) {
 		return di.toString();
     }
@@ -161,6 +171,19 @@ public class Controller {
     	return dataItem.toDi(text);
     }
 
+    // finds the node with the given key
+    // used by delete button handler
+    private DefaultMutableTreeNode findNode(int key) {
+		DefaultMutableTreeNode ptrn;
+		Enumeration<DefaultMutableTreeNode> nodes = m_view.getRoot().children(); 
+			while(nodes.hasMoreElements()) { 
+				ptrn = nodes.nextElement();
+				if(dataItem.toDi(ptrn.toString()).getKey() == key)
+				return ptrn;
+			}
+		return null;
+	}
+    
     public class aboutHandler implements ActionListener {
         public void actionPerformed(ActionEvent e) {
         	m_view.setStatus("Using " + driver.getVersion()); 
@@ -169,55 +192,83 @@ public class Controller {
     }
     
     // button handlers
+    // this handles both insert and update
+    // in both data structure and tree
+    // need to capture state - if most recent clicked was New
+    // or if it was a tree click
     public class btnUpdHandler implements ActionListener {
     	public void actionPerformed(ActionEvent e) {
-    		m_view.setStatus("bUpd clicked");
+        	String out = "";
+        	switch(updateState) {
+        	case _NEW:
+        		// add is - just add new node
+        		// TODO test if same key inserted for both engines
+        		try {
+        			dataItem di = new dataItem(m_view.getItem(), Integer.parseInt(m_view.getKey()));
+        			m_view.addNode(makeNodeText(di)); // this can be refactored to just use di.toString, but just in case
+        			dDriver.add(di.getKey(), di.getItem());
+        			m_view.setItem("");
+        			m_view.setKey("");
+        			updateState = buttonAction._NONE;
+        			out = "Inserted";
+        		} catch(NumberFormatException x) { out = "Key cannot be parsed"; }
+        		catch(Exception x) { out = "Error inserting node " + x.getMessage(); }
+        		break;
+        	case _TREE:
+        		// replace is - find node and set object to new value
+        		// TODO refactor to use tree index insert
+        		try {
+        			dataItem di = new dataItem(m_view.getItem(), Integer.parseInt(m_view.getKey())); // TODO to refactor? move di before switch
+        			DefaultMutableTreeNode replaced = findNode(di.getKey());
+        			replaced.setUserObject(makeNodeText(di)); 
+        			m_view.treeRepaint(replaced);
+        			dDriver.del(Integer.parseInt(m_view.getKey()));
+        			dDriver.add(di.getKey(), di.getItem());
+        			out = "Updated";
+        		} catch(Exception x) { out = "Error updating node " + x.getMessage(); }
+        		break;
+        	default:
+        		out = "nothing";
+        		break;
+        	}
+        	m_view.setStatus(out);
     	}
     }
     
     // delete
     // this relies on data being in the text box
-    // TODO test
+    // deletion from data structure, and from node 
+    // (not transactional...)
     public class btnDelHandler implements ActionListener {
     	public void actionPerformed(ActionEvent e) {
     		m_view.setStatus("bDel clicked");
     		int i = -1;
-    		
+    		updateState = buttonAction._NONE; //resets the state for update
     		try {
     			i = Integer.parseInt(m_view.getKey());
     			dDriver.del(i);
     			delNode(i);
+    			m_view.setItem("");
+    			m_view.setKey("");
     		} catch(NumberFormatException x) { m_view.setStatus("Nothing to delete"); }
     		catch(Exception x) { m_view.setStatus("Error deleting " + x.getMessage()); }
     	}
-    	
-    	// finds the node with the given key
-    	private DefaultMutableTreeNode findNode(int key) {
-    		DefaultMutableTreeNode ptrn;
-    		Enumeration<DefaultMutableTreeNode> nodes = m_view.getRoot().children(); 
-     		while(nodes.hasMoreElements()) {
-     			ptrn = nodes.nextElement();
-     			if(dataItem.toDi(ptrn.toString()).getKey() == key)
-     				return ptrn;
-     		}
-    		return null;
-    	}
-    	
-        // this removes the node identified by key
+
+        // this removes the node identified by key, action of delete button handler
      	// TODO there might be a better way of doing this,
      	// make node index = key?
      	private void delNode(int key) {
-     		DefaultMutableTreeNode ptrn = findNode(key);
+     		DefaultMutableTreeNode ptrn = findNode(key); // method moved to parent class
      		DefaultTreeModel model = (DefaultTreeModel)m_view.getTree().getModel();
      		
      		if(ptrn != null && ptrn.getParent() != null) {
-     			/*
-     			m_view.getTree().setSelectionPath(null);
-     			model.removeNodeFromParent(ptrn);
-     			*/
-     			m_view.removeNode(ptrn); // push to thread?
+     			//m_view.getTree().setSelectionPath(null); // this is the supposed fix but it too throws an error
+     			// this throws a spurious error? TODO explore further, for now failing silently
+     			try {
+     				model.removeNodeFromParent(ptrn);
+     			} catch(NullPointerException x) { m_view.setStatus("Internal error, delete completed"); }
      			m_view.setStatus("Removed " + Integer.toString(key));
-     		} else { m_view.setStatus("Unusual deletion state"); }
+     		} else { m_view.setStatus("Unusual deletion state"); } // if getting other error....
      	}
     }
     
@@ -227,12 +278,13 @@ public class Controller {
     	public void actionPerformed(ActionEvent e) {
     		m_view.setKey("add key...");
     		m_view.setItem("add item...");
+    		updateState = buttonAction._NEW;
     	}
     }
     
     // tree event handler
-    // occurs when clicking on tree
-    // handle clicking the header
+    // occurs when clicking on tree - open item in text box or
+    // nothing if clicking the header
     public class treeClickHandler implements TreeSelectionListener {
 		public void valueChanged(TreeSelectionEvent e) {
 			String selectionPath = e.getNewLeadSelectionPath().toString();
@@ -244,15 +296,16 @@ public class Controller {
 				selectionPath = selectionPath.substring(startOfNode+2);
 				selectionPath = selectionPath.replace(']', '\0');
 				
-				try { // will throw null exception if failed
-					// TODO add handler for null - defer to driver
+				try { // toDi will throw null exception if failed
+					// TODO add handler for null - defer to driver, not handled here
 					textItem = dataItem.toDi(selectionPath).getItem();
 					textKey = Integer.toString(dataItem.toDi(selectionPath).getKey());
 					m_view.setStatus(selectionPath);
+					updateState = buttonAction._TREE; // TODO test this
 				} catch(Exception x){ m_view.setStatus("Cannot parse " + selectionPath); }
 				m_view.setItem(textItem);
 				m_view.setKey(textKey);
-			} else { m_view.setStatus(rootSelected); }
+			} else { m_view.setStatus(rootSelected); updateState = buttonAction._NONE; }
 		}
     }
 }
