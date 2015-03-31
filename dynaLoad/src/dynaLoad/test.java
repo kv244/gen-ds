@@ -2,8 +2,6 @@ package dynaLoad;
 
 import java.lang.reflect.InvocationTargetException;
 
-// TODO: HashTable overwrite
-// the overwrite fails if data already exists -- TD
 // deal with name / class in driver
 
 // tested if !HT! not there

@@ -272,7 +272,7 @@ public class View {
 		JScrollPane scrollPaneTextArea = new JScrollPane();
 		scrollPaneTextArea.setBounds(245, 360, 200, 50);
 		frame.getContentPane().add(scrollPaneTextArea);
-		textAreaValue = new JTextArea(); // TODO provide accessor
+		textAreaValue = new JTextArea(); 
 		textAreaValue.setBounds(246, 361, 198, 48);
 		scrollPaneTextArea.setViewportView(textAreaValue);
 		//frame.getContentPane().add(textAreaValue);

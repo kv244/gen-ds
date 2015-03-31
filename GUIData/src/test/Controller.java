@@ -258,7 +258,7 @@ public class Controller {
         	switch(updateState) {
         	case _NEW:
         		// add is - just add new node
-        		// TODO test if same key inserted for both engines
+        		// TODO test if same (existing) key inserted for both engines
         		try {
         			dataItem di = new dataItem(m_view.getItem(), Integer.parseInt(m_view.getKey()));
         			m_view.addNode(makeNodeText(di)); // this can be refactored to just use di.toString, but just in case
@@ -360,7 +360,7 @@ public class Controller {
 					textItem = dataItem.toDi(selectionPath).getItem();
 					textKey = Integer.toString(dataItem.toDi(selectionPath).getKey());
 					m_view.setStatus(selectionPath);
-					updateState = buttonAction._TREE; // TODO test this
+					updateState = buttonAction._TREE; 
 				} catch(Exception x){ m_view.setStatus("Cannot parse " + selectionPath); }
 				m_view.setItem(textItem);
 				m_view.setKey(textKey);
