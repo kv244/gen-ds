@@ -51,8 +51,11 @@ public class View {
 	
 	private DefaultMutableTreeNode rootNode;
 	
+	private char _magic = '~';
+	private char _newline = '\n'; // TODO multiplatform?
+	
 	/**
-	 * Create the application. -- init form
+	 * Inititialize form
 	 */
 	public View() {
 		initialize();
@@ -140,17 +143,29 @@ public class View {
 	}
 	
 	// text box accessors
+	// replaces newline with magic
 	// TODO trap NullPointer?
 	public String getItem() {
-		return this.textAreaValue.getText();
+		return scrubNewLine(this.textAreaValue.getText());
+	}
+	
+	private String scrubNewLine(String parm) {
+		String newString = parm.replace(_newline, _magic);
+		return newString;
 	}
 	
 	public String getKey() {		
 		return this.textKey.getText();
 	}
 	
+	// replaces magic with newline
 	public void setItem(String text) {
-		this.textAreaValue.setText(text);
+		this.textAreaValue.setText(scrubMagic(text));
+	}
+	
+	private String scrubMagic(String parm) {
+		String newString = parm.replace(_magic, _newline);
+		return newString;
 	}
 	
 	public void setKey(String text) {
@@ -244,11 +259,7 @@ public class View {
 		btnUpd.setToolTipText("Update existing item");
 		btnUpd.setBounds(552, 359, 80, 30);
 		frame.getContentPane().add(btnUpd);
-		
-		textAreaValue = new JTextArea(); // TODO provide accessor
-		textAreaValue.setBounds(230, 359, 228, 50);
-		frame.getContentPane().add(textAreaValue);
-		
+				
 		tree = new JTree(rootNode);
 		
 		JScrollPane scrollPane = new JScrollPane();
@@ -257,6 +268,15 @@ public class View {
 	
 		frame.getContentPane().add(scrollPane);
 		scrollPane.setViewportView(tree);
+		
+		JScrollPane scrollPaneTextArea = new JScrollPane();
+		scrollPaneTextArea.setBounds(245, 360, 200, 50);
+		frame.getContentPane().add(scrollPaneTextArea);
+		textAreaValue = new JTextArea(); // TODO provide accessor
+		textAreaValue.setBounds(246, 361, 198, 48);
+		scrollPaneTextArea.setViewportView(textAreaValue);
+		//frame.getContentPane().add(textAreaValue);
+		
 		
 		setStatus("Running");
 	}

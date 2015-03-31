@@ -12,16 +12,15 @@ package test;
 // clicking save (update) will update the item, if an item has been chosen, or message otherwise
 // clicking new will clear the text boxes, to be updated/inserted by save (update)
 // clicking delete will delete the highlighted item in the tree (if any), or message otherwise
-// TODO handle case when clicked but no document in memory (p.2)
-// affected:
-// 	update
-// 	delete
-// TODO if _NEW, do not allow the key box to be modified
+// TODO handle case when error while reading file - still not working well
+
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.Enumeration;
 
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
@@ -36,7 +35,6 @@ public class Controller {
 
 	private View m_view;
 	private driver dDriver = null;
-	private boolean engineSet = false;
 	private String engine = null;
 	private String rootSelected = "root";
 	private enum buttonAction{ _NEW, _TREE, _NONE };
@@ -67,7 +65,9 @@ public class Controller {
      * Ask file name and engine
      * TODO dynamically determine engines, defer to driver to see what files are
      * available
-     * TODO ask to save file, what is the indicator? 
+     * dDriver null means no file has been loaded yet
+     * otherwise, if new file or file loaded|even already saved, 
+     * dDriver will always be not null
      */
     public class newHandler implements ActionListener {
         public void actionPerformed(ActionEvent e) {
@@ -80,32 +80,67 @@ public class Controller {
         	
         	if(engine.startsWith("dynaLoad")) {
         		dDriver = new driver(engine);
-        		System.out.println(engine);
+        		m_view.setStatus("Using " + engine);
         	} else {
-        		dDriver = null;
+        		m_view.setStatus("Engine not recognized");
+        		return;
+        	} // TODO this has to be modified to use any number of engines
+        	
+        	// have to set the file name
+        	// setstore also tries to open the file so we have to make sure file does not exist
+        	
+        	JFileChooser fSave = new JFileChooser();
+        	int retVal = fSave.showSaveDialog(null);
+        	if (retVal == JFileChooser.APPROVE_OPTION) {
+                File file = fSave.getSelectedFile();
+                if(file.exists()) {
+                    m_view.setStatus("File already exists, use open or choose a new name");
+                    return;
+                }
+
+                m_view.setStatus("Using: " + file.getName());
+                try {
+                	dDriver.setStore(file.getPath());
+                	m_view.setRoot(file.getPath()); 
+                	updateState = buttonAction._NONE;
+                } catch(Exception x) { 
+                	m_view.setStatus("Failed to use file " + file.getName() + ", " + x.getMessage()); 
+                	dDriver = null; 
+                }
         	}
-        	//TODO implement new file
         }
     }
     
     /* Quit
-     * TODO Prompt to save if file in memory.
      */
     public class quitHandler implements ActionListener {
         public void actionPerformed(ActionEvent e) {
+        	if(dDriver!=null) {
+        		int response = JOptionPane.showConfirmDialog(null, "Data in memory, click yes to quit");
+        		if(response != JOptionPane.YES_OPTION)
+        			return;
+        	}
         	System.exit(0);
         }
     }
     
-    /*Save
-     * 
+    /* Save
+     * Basic logic added
      */
     public class saveHandler implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-        //TODO this is a basic handler, needs more work, just for testing
+        	if(dDriver == null) {
+        		m_view.setStatus("Open or create a file first");
+        		return;
+        	}
         	try {
-        		dDriver.commit();
-        		m_view.setStatus("Saved");
+            	
+        		if(dDriver.getSize() == 0) {
+            		m_view.setStatus("No data to save");
+            		return;
+            	} else {
+            		m_view.setStatus(dDriver.commit()); 
+            	}
         	} catch(Exception x) { m_view.setStatus("Error saving " + x.getMessage()); }
         }
     }
@@ -117,6 +152,17 @@ public class Controller {
      */
     public class openHandler implements ActionListener {
         public void actionPerformed(ActionEvent e) {
+        	
+        	if(dDriver!=null) {
+        		int response = JOptionPane.showConfirmDialog(null, "Data in memory, click yes to discard and load other");
+        		if(response != JOptionPane.YES_OPTION)
+        			return;
+        		else
+        			dDriver = null;
+        		// TODO this should also destroy the items stored in memory
+        		// TODO remove tree at this point
+        	}
+        	
         	java.awt.FileDialog fGet = new java.awt.FileDialog(m_view.getFrame(), 
         			"Choose file");
         	fGet.setVisible(true);
@@ -129,8 +175,6 @@ public class Controller {
         				: "File not compliant, or not found");
         		
         		if(engine == null) return;
-        		
-        		// TODO add state logic for memory 
         		
         		// basic tree loading:
         		// create new driver
@@ -151,9 +195,12 @@ public class Controller {
 	        			}
 	        			rootSelected = engine + "(" + Integer.toString(size)+")";
 	        			m_view.setStatus(rootSelected);
-        				m_view.setRoot(file); // TODO refresh?
+        				m_view.setRoot(file); 
+	        		} else {
+	        			m_view.setStatus("File is unreadable"); // can add data to it though
 	        		}
-        		} catch(Exception x) {
+	        		
+        		} catch(Exception x) { //TODO this still does not get the correct message from the underlying error
         			m_view.setStatus("Engine: " + engine + " error " + x.getMessage());
         		}
         	} else { m_view.setStatus("Open canceled"); }
@@ -186,8 +233,12 @@ public class Controller {
     
     public class aboutHandler implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-        	m_view.setStatus("Using " + driver.getVersion()); 
-        	// also, if driver loaded, show engine
+        	String out = "Using " + driver.getVersion();
+        	try { 
+        		if(dDriver != null)
+        			out += "; " + dDriver.getEngine();
+        	} catch(Exception x){}
+        	m_view.setStatus(out);
         }
     }
     
@@ -196,8 +247,13 @@ public class Controller {
     // in both data structure and tree
     // need to capture state - if most recent clicked was New
     // or if it was a tree click
+    // this has to deal with issue #1, newline in text
     public class btnUpdHandler implements ActionListener {
     	public void actionPerformed(ActionEvent e) {
+    		if(dDriver == null) {
+    			m_view.setStatus("No file in memory");
+    			return;
+    		}
         	String out = "";
         	switch(updateState) {
         	case _NEW:
@@ -241,7 +297,10 @@ public class Controller {
     // (not transactional...)
     public class btnDelHandler implements ActionListener {
     	public void actionPerformed(ActionEvent e) {
-    		m_view.setStatus("bDel clicked");
+    		if(dDriver == null) {
+    			m_view.setStatus("No file in memory");
+    			return;
+    		}
     		int i = -1;
     		updateState = buttonAction._NONE; //resets the state for update
     		try {

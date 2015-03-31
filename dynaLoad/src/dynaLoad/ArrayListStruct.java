@@ -23,6 +23,8 @@ public class ArrayListStruct implements itemOp {
 	// loading in memory then adding
 	// compared to the Hash engine
 	
+	static final String _separator = "^^";
+	
 	private ListIterator<String> iterKeys;
 	
 	// ctor, will set store to the default value
@@ -101,19 +103,20 @@ public class ArrayListStruct implements itemOp {
 
 	@SuppressWarnings("static-access")
 	@Override
-	public String serialize() throws FileNotFoundException, IOException {
+	public String serialize() 
+			throws FileNotFoundException, IOException {
 		String res = "Written to " + _store + " records ";
-		PrintWriter out = new PrintWriter( this._store );
-		out.write( this._magic );
-		out.write( "\n" );
+		PrintWriter out = new PrintWriter(this._store);
+		out.write(this._magic);
+		out.write("\n");
 				
-		for( int i = 0; i < _struct.size(); i++ ) {
+		for(int i = 0; i < _struct.size(); i++) {
 			String val = _struct.get(i);
 			//
 			//TODO see loadStore
 			//if( !val.equals( _null ))
 			//{
-				String line = "{" + Integer.toString(i) + "__" + val + "}"; 
+				String line = "{" + Integer.toString(i) + _separator + val + "}"; 
 				out.println( line );
 			//}
 			//
@@ -122,12 +125,15 @@ public class ArrayListStruct implements itemOp {
 		out.flush();
 		out.close();
 		
-		res += Integer.toString( _struct.size());
+		res += Integer.toString(_struct.size());
 		return res;	
 	}
 
+	// set store
+	// sets the file storage
+	// attempts to load it, so be careful how you use it
 	@Override
-	public int setStore( String store ) {
+	public int setStore(String store) {
 		this._store = store;
 		this.loadStore(); 
 		return this.getSize();	
@@ -154,38 +160,31 @@ public class ArrayListStruct implements itemOp {
 			loaded = new ArrayList<String>();
 			
 			while((line = in.readLine()) != null) {
-				
-				if(line.startsWith( "{" ) && line.endsWith( "}" ) && line.contains( "__" )) {
+				// this assumes all is stored on one line
+				if(line.startsWith( "{" ) && line.endsWith( "}" ) && line.contains(_separator)) {
 					String s1, s2;
-					int separatorPos = line.indexOf( "__" );
+					int separatorPos = line.indexOf(_separator);
 					int iKey;
 					
-					s1 = line.substring( 1, separatorPos ); // first segment
-					s2 = line.substring( separatorPos + 2, line.length() - 1 ); // second segment
-				
-					try {
-						iKey = Integer.parseInt( s1 );
-						loaded.add( iKey, s2 );		
-					} catch( NumberFormatException x )
-					{
+					try {	
+						s1 = line.substring(1, separatorPos); 
+						s2 = line.substring(separatorPos + _separator.length(), line.length() - 1); 
+						iKey = Integer.parseInt(s1);
+						loaded.add(iKey, s2);		
+					} catch(NumberFormatException x) {
 						// just ignore line
 					}
-					
-				} // end if; if line does not follow format, throw error
-				// which will fail silently below; so if any line cannot be read
-				// the whole is disposed of as the structure does not get populated
-				else {
-					throw new IOException();
-				}
-				
+				} 
 			} // end while (reading file)
 			
-			if( loaded.size() > 0 )
-				this._struct = loaded;		
+			if(loaded.size() > 0)
+				this._struct = loaded;		 // replace in memory with what was loaded. TODO it could be replaced as each line is read
 			
 		} catch(FileNotFoundException x) {} // file missing, silent fail 
 		catch(IOException x) {} // can't read from file, silent fail
-		finally{ try { in.close(); } catch(Exception x){}}
+		finally { 
+			try { in.close(); } catch(Exception x){}
+		}
 		return;
 	}
 	

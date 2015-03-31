@@ -16,6 +16,7 @@ public class HashTableStruct implements itemOp {
 	private String _store;
 	static final String _engine = "dynaLoad.HashTableStruct";
 	static final String _magic = "!HT!";
+	static final String _separator = "%";
 	
 	private Enumeration<Integer> iterKeys;
 	
@@ -82,11 +83,11 @@ public class HashTableStruct implements itemOp {
 				
 				if(lineFits(line)) {
 					String s1, s2;
-					int separatorPos = line.indexOf(':');
+					int separatorPos = line.indexOf(_separator);
 					int iKey;
 					
 					s1 = line.substring(1, separatorPos); // first segment
-					s2 = line.substring(separatorPos + 1, line.length() - 1); // second segment
+					s2 = line.substring(separatorPos + _separator.length(), line.length() - 1); // second segment
 				
 					try {
 						iKey = Integer.parseInt(s1);
@@ -119,7 +120,7 @@ public class HashTableStruct implements itemOp {
 	
 	// refactor: determine if line read in is a valid line
 	private boolean lineFits(String line) {
-		return line.startsWith("{") && line.endsWith("}") && line.contains(":");
+		return line.startsWith("{") && line.endsWith("}") && line.contains(_separator);
 	}
 	
 	@SuppressWarnings("static-access")

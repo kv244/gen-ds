@@ -6,11 +6,7 @@ import java.io.FileReader;
 import java.lang.reflect.*;
 import java.io.IOException;
 
-// TODO provide iterators in engines
-// to populate tree
-// ? how are classes identified from JARs √
 // TODO check any static references as these will load the class
-// TODO logger + exception handling...
 
 public class driver {
 	itemOp _engine;
@@ -222,7 +218,7 @@ public class driver {
 		String res = "";
 		Class noParams[] = {};
 		this.method = this.ptrClass.getDeclaredMethod( "serialize", noParams );
-		res = this.method.invoke( ptrEngine, (Object[]) null ).toString();
+		res = this.method.invoke(ptrEngine, (Object[]) null).toString();
 		
 		return res;
 		// _engine.serialize();
