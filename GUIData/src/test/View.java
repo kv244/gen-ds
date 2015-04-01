@@ -115,6 +115,11 @@ public class View {
 	public void addNode(String text) {
 		//TODO trying this, and it provides index, so it can be refactored for deletes etx
 		//rootNode.add(new DefaultMutableTreeNode(text));
+		// this cannot be used if the index is not sequential - WONTFIX
+		// it could happen not only if __nulls__ not shown but also if the file is read
+		// in reverse order. Possible optimization: associate key with the index instead of
+		// scanning the tree to find the node.
+		// the code now just inserts at the end whatever it reads from the file
 		
 		DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
 		model.insertNodeInto(new DefaultMutableTreeNode(text), rootNode, rootNode.getChildCount());
@@ -122,8 +127,11 @@ public class View {
 	
 	public void treeRepaint(DefaultMutableTreeNode node) {
 		DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
-		if(node==null)model.reload();
-		else model.reload(node);
+		if(node==null) {
+			model.reload();
+		}
+		else 
+			model.reload(node);
 	}
 	
 	// used by the controller mostly to remove nodes
@@ -173,7 +181,9 @@ public class View {
 		this.textKey.setText(text);
 	}
 	
-	
+	public void setKeyReadOnly(boolean readOnly) {
+		this.textKey.setEditable(!readOnly);
+	}
 	/**
 	 * Initialize the contents of the frame.
 	 * 

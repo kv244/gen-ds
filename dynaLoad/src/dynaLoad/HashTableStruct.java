@@ -88,23 +88,16 @@ public class HashTableStruct implements itemOp {
 					int separatorPos = line.indexOf(_separator);
 					int iKey;
 					
-					s1 = line.substring(1, separatorPos); // first segment
-					s2 = line.substring(separatorPos + _separator.length(), line.length() - 1); // second segment
+					s1 = line.substring(1, separatorPos); 
+					s2 = line.substring(separatorPos + _separator.length(), line.length() - 1); 
 				
 					try {
 						iKey = Integer.parseInt(s1);
 						loaded.put(iKey, s2);		
-					} catch( NumberFormatException x ) {
-						// just ignore line
+					} catch(NumberFormatException x) {
+						// just ignore line if number cannot be parsed 
 					}
-					
-				} // end if; if line does not follow format, throw error
-				// which will fail silently below; so if any line cannot be read
-				// the whole is disposed of as the structure does not get populated
-				else {
-					throw new IOException();
-				}
-				
+				} // end if - load lines which don't fail
 			} // end while (reading file)
 			
 			if( loaded.size() > 0 )

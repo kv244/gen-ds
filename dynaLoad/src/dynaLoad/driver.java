@@ -75,7 +75,7 @@ public class driver {
 		return null;
 	}
 	
-	private static final boolean checkMagic( String fileName, String magic ) {
+	private static final boolean checkMagic(String fileName, String magic) {
 		try {
 			BufferedReader in = new BufferedReader(new FileReader(fileName));
 			String readMagic = in.readLine();
@@ -137,7 +137,6 @@ public class driver {
 		// _engine.setStore( store );
 	}
 	
-	// iterators TODO review
 	@SuppressWarnings("rawtypes")
 	public void iterReset() throws ItemErrorException,
 		NoSuchMethodException,
@@ -162,8 +161,6 @@ public class driver {
 	
 		return ret;
 	}
-	
-	// TODO end iter -- move to interface
 	
 	@SuppressWarnings("rawtypes")
 	public void add(int i, String v) throws

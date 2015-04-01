@@ -6,14 +6,14 @@ package test;
 // loading it
 // the driver is initialized by loading a file, when it picks up the engine from the file
 // or by New, when it uses what the user chose
-
 // GUI: (p.1)
 // double clicking an existing item in the tree will put it in the text box
 // clicking save (update) will update the item, if an item has been chosen, or message otherwise
 // clicking new will clear the text boxes, to be updated/inserted by save (update)
 // clicking delete will delete the highlighted item in the tree (if any), or message otherwise
-// TODO handle case when error while reading file - still not working well
-
+// TODO reengineering:
+// use structure to associate key with node index
+// no need to find node at update/delete
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,7 +22,6 @@ import java.util.Enumeration;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -71,6 +70,19 @@ public class Controller {
      */
     public class newHandler implements ActionListener {
         public void actionPerformed(ActionEvent e) {
+        	
+        	if(dDriver != null) {
+        		int response = JOptionPane.showConfirmDialog(null, "Data in memory, click yes to quit");
+        		if(response != JOptionPane.YES_OPTION)
+        			return;
+        		// delete trees, same problem as when loading, fail silently now TODO
+        		// TODO - refactor the dDriver == null check and tree deletion from below
+    			m_view.getRoot().removeAllChildren();
+    			try { m_view.treeRepaint(null); } catch(Exception x) {} // same error as elsewhere
+    			dDriver = null;
+    			m_view.setStatus("Tree empty");
+        	}
+        	
         	engine = JOptionPane.showInputDialog("Choose an engine:\n1. HS \n2. AL");
         	
         	if(engine.compareTo("1") == 0)
@@ -125,7 +137,6 @@ public class Controller {
     }
     
     /* Save
-     * Basic logic added
      */
     public class saveHandler implements ActionListener {
         public void actionPerformed(ActionEvent e) {
@@ -157,10 +168,14 @@ public class Controller {
         		int response = JOptionPane.showConfirmDialog(null, "Data in memory, click yes to discard and load other");
         		if(response != JOptionPane.YES_OPTION)
         			return;
-        		else
+        		else {
+        			//m_view.getTree().setSelectionPath(null); fails
+        			m_view.getRoot().removeAllChildren();
+        			try { m_view.treeRepaint(null); } catch(Exception x) {} // same error as elsewhere
         			dDriver = null;
-        		// TODO this should also destroy the items stored in memory
-        		// TODO remove tree at this point
+        			m_view.setStatus("Tree empty");
+        		}
+        		// TODO this should also destroy the items stored in memory - I could iterate and destroy each individually
         	}
         	
         	java.awt.FileDialog fGet = new java.awt.FileDialog(m_view.getFrame(), 
@@ -272,13 +287,13 @@ public class Controller {
         		break;
         	case _TREE:
         		// replace is - find node and set object to new value
-        		// TODO refactor to use tree index insert
+        		// TODO refactor to use tree index insert (with data structure)
         		try {
         			dataItem di = new dataItem(m_view.getItem(), Integer.parseInt(m_view.getKey())); // TODO to refactor? move di before switch
         			DefaultMutableTreeNode replaced = findNode(di.getKey());
         			replaced.setUserObject(makeNodeText(di)); 
         			m_view.treeRepaint(replaced);
-        			dDriver.del(Integer.parseInt(m_view.getKey()));
+        			dDriver.del(Integer.parseInt(m_view.getKey())); //TODO here this needs to be not changeable
         			dDriver.add(di.getKey(), di.getItem());
         			out = "Updated";
         		} catch(Exception x) { out = "Error updating node " + x.getMessage(); }
@@ -314,15 +329,17 @@ public class Controller {
     	}
 
         // this removes the node identified by key, action of delete button handler
-     	// TODO there might be a better way of doing this,
-     	// make node index = key?
+     	// TODO reengineer for faster search
      	private void delNode(int key) {
+    		if(dDriver == null) {
+    			m_view.setStatus("No file in memory");
+    			return;
+    		}
      		DefaultMutableTreeNode ptrn = findNode(key); // method moved to parent class
      		DefaultTreeModel model = (DefaultTreeModel)m_view.getTree().getModel();
      		
      		if(ptrn != null && ptrn.getParent() != null) {
      			//m_view.getTree().setSelectionPath(null); // this is the supposed fix but it too throws an error
-     			// this throws a spurious error? TODO explore further, for now failing silently
      			try {
      				model.removeNodeFromParent(ptrn);
      			} catch(NullPointerException x) { m_view.setStatus("Internal error, delete completed"); }
@@ -335,8 +352,17 @@ public class Controller {
     // functionality implemented in the update handler
     public class btnNewHandler implements ActionListener {
     	public void actionPerformed(ActionEvent e) {
-    		m_view.setKey("add key...");
+    		if(dDriver == null) {
+    			m_view.setStatus("No file in memory");
+    			return;
+    		}
+    		int attemptKey = 0;
+    		try {
+    			attemptKey = dDriver.getSize();
+    		} catch(Exception x) {}
+    		m_view.setKey(Integer.toString(attemptKey));
     		m_view.setItem("add item...");
+    		m_view.setKeyReadOnly(false); 
     		updateState = buttonAction._NEW;
     	}
     }
@@ -357,14 +383,21 @@ public class Controller {
 				
 				try { // toDi will throw null exception if failed
 					// TODO add handler for null - defer to driver, not handled here
+					m_view.setKeyReadOnly(true); // disable editing of key
 					textItem = dataItem.toDi(selectionPath).getItem();
 					textKey = Integer.toString(dataItem.toDi(selectionPath).getKey());
 					m_view.setStatus(selectionPath);
 					updateState = buttonAction._TREE; 
 				} catch(Exception x){ m_view.setStatus("Cannot parse " + selectionPath); }
-				m_view.setItem(textItem);
-				m_view.setKey(textKey);
-			} else { m_view.setStatus(rootSelected); updateState = buttonAction._NONE; }
+				finally { // setting to blank if non readable
+					m_view.setItem(textItem);
+					m_view.setKey(textKey);
+				}
+			} else { 
+				m_view.setStatus(rootSelected); 
+				updateState = buttonAction._NONE; 
+				m_view.setKeyReadOnly(false); // enable editing of key	
+			}
 		}
     }
 }

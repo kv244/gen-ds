@@ -14,8 +14,8 @@ public class Main {
 public static void main(String[] args) {
 	
 	View view = new View();
-	Controller 	controller = new Controller(view); 
-		//needs to be instantiated for the handlers to work
+	@SuppressWarnings("unused")
+	Controller controller = new Controller(view); 
 	        	        
    	EventQueue.invokeLater(new Runnable() {
    			@Override
