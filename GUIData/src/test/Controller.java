@@ -37,7 +37,7 @@ public class Controller {
 	private driver dDriver = null;
 	private String engine = null;
 	private String rootSelected = "root";
-	private enum buttonAction{ _NEW, _TREE, _NONE };
+	private enum buttonAction{ _NEW, _TREE, _NONE }
 	private buttonAction updateState;
 	
 	// Ctor

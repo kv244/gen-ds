@@ -32,6 +32,7 @@ public class HashTableStruct implements itemOp {
 	// iterator for the data struct
 	// TODO refactor? should this just be exposed, or another
 	// class created? For now, it needs to be reset before calling
+	@Override
 	public dataItem next() {
 		dataItem ret = null;
 		try {
@@ -47,6 +48,7 @@ public class HashTableStruct implements itemOp {
 		return null;
 	}
 	
+	@Override
 	public void iterReset() {
 		iterKeys = _struct.keys();
 	}
@@ -123,12 +125,14 @@ public class HashTableStruct implements itemOp {
 		return line.startsWith("{") && line.endsWith("}") && line.contains(_separator);
 	}
 	
+	@Override
 	@SuppressWarnings("static-access")
 	public String getEngine() {
 		return this._engine;
 	}
 	
 	// addItem
+	@Override
 	public void addItem(dataItem di) throws ItemErrorException {
 		// returns item if key already exists or null if it is a new insert
 		// we throw error if it already exists
@@ -141,6 +145,7 @@ public class HashTableStruct implements itemOp {
 	}
 
 	// getItem
+	@Override
 	public String getItem(int iKey) throws ItemErrorException {
 		String res;
 		if(( res = this._struct.get(iKey)) != null )
@@ -150,6 +155,7 @@ public class HashTableStruct implements itemOp {
 	}
 
 	// delItem
+	@Override
 	public void delItem(int iKey) throws ItemErrorException {
 		String res = null;
 		if(( res = this._struct.get(iKey)) != null ) {
@@ -160,12 +166,13 @@ public class HashTableStruct implements itemOp {
 			throw new ItemErrorException( "Item " + Integer.toString(iKey) + " not found to delete." );
 	}
 
+	@Override
 	@SuppressWarnings("static-access")
 	public String serialize() throws FileNotFoundException, IOException {
 		// Using file to avoid dealing with bytes and string conversion
 		// Newlines separate records, to make reading in easier
 		
-		PrintWriter out = new PrintWriter( this._store );
+		PrintWriter out = new PrintWriter(this._store);
 		out.write(this._magic);
 		out.write("\n");
 		
@@ -178,7 +185,7 @@ public class HashTableStruct implements itemOp {
 			int key = keys.nextElement();
 			String val = this._struct.get(key);
 			
-			String line = "{" + Integer.toString(key) + ":" + val + "}\n";
+			String line = "{" + Integer.toString(key) + _separator + val + "}\n";
 			out.print( line );
 			i++;
 		}
@@ -192,6 +199,7 @@ public class HashTableStruct implements itemOp {
 	}
 
 	// returns size of store after setting it 
+	@Override
 	public int setStore( String store ) {
 		this._store = store;
 		this.loadStore(); 
@@ -199,6 +207,7 @@ public class HashTableStruct implements itemOp {
 	}
 
 	// getSize
+	@Override
 	public int getSize() {
 		return this._struct.size();
 	}	
