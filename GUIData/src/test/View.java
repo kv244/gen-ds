@@ -276,6 +276,6 @@ public class View {
 		textAreaValue.setBounds(246, 361, 198, 48);
 		scrollPaneTextArea.setViewportView(textAreaValue);
 		
-		setStatus("Running");
+		setStatus("Running...");
 	}
 }
