@@ -3,6 +3,9 @@ package test;
 // TODO Main
 // refactor file load and engine check in driver?
 // check engine properties... HS replace if already exists?
+//
+// To run: java -cp GUIDynaload.jar;.\* test.Main
+// Or update Manifest: http://stackoverflow.com/questions/250166/noclassdeffounderror-while-trying-to-run-my-jar-with-java-exe-jar-whats-wron
 
 import java.awt.EventQueue;
 
@@ -15,7 +18,8 @@ public static void main(String[] args) {
 		//needs to be instantiated for the handlers to work
 	        	        
    	EventQueue.invokeLater(new Runnable() {
-   			public void run() {
+   			@Override
+			public void run() {
    				try {
    					view.setFrame();
    				} catch (Exception e) {
