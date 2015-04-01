@@ -18,7 +18,7 @@ public class test {
 		
 		try {
 			// setStore
-			d.setStore(d.getEngine() + "BigStore1.txt");
+			d.setStore(d.getEngine() + "BigStore10.txt");
 			
 			//String s1 = d.checkStorageEngine("l.txt");
 			
