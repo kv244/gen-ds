@@ -5,6 +5,7 @@ package test;
 // check engine properties... HS replace if already exists?
 //
 // To run: java -cp GUIDynaload.jar;.\* test.Main
+// does not work on Mac... but it works from GUI after adding the classpath to manifest
 // Or update Manifest: http://stackoverflow.com/questions/250166/noclassdeffounderror-while-trying-to-run-my-jar-with-java-exe-jar-whats-wron
 
 import java.awt.EventQueue;

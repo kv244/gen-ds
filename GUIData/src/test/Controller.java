@@ -70,7 +70,8 @@ public class Controller {
      */
     public class newHandler implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-        	
+        	m_view.setItem("");
+			m_view.setKey("");
         	if(dDriver != null) {
         		int response = JOptionPane.showConfirmDialog(null, "Data in memory, click yes to quit");
         		if(response != JOptionPane.YES_OPTION)
@@ -140,6 +141,8 @@ public class Controller {
      */
     public class saveHandler implements ActionListener {
         public void actionPerformed(ActionEvent e) {
+        	m_view.setItem("");
+			m_view.setKey("");
         	if(dDriver == null) {
         		m_view.setStatus("Open or create a file first");
         		return;
@@ -163,7 +166,8 @@ public class Controller {
      */
     public class openHandler implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-        	
+        	m_view.setItem("");
+			m_view.setKey("");
         	if(dDriver!=null) {
         		int response = JOptionPane.showConfirmDialog(null, "Data in memory, click yes to discard and load other");
         		if(response != JOptionPane.YES_OPTION)
@@ -278,8 +282,6 @@ public class Controller {
         			dataItem di = new dataItem(m_view.getItem(), Integer.parseInt(m_view.getKey()));
         			m_view.addNode(makeNodeText(di)); // this can be refactored to just use di.toString, but just in case
         			dDriver.add(di.getKey(), di.getItem());
-        			m_view.setItem("");
-        			m_view.setKey("");
         			updateState = buttonAction._NONE;
         			out = "Inserted";
         		} catch(NumberFormatException x) { out = "Key cannot be parsed"; }
@@ -293,7 +295,7 @@ public class Controller {
         			DefaultMutableTreeNode replaced = findNode(di.getKey());
         			replaced.setUserObject(makeNodeText(di)); 
         			m_view.treeRepaint(replaced);
-        			dDriver.del(Integer.parseInt(m_view.getKey())); //TODO here this needs to be not changeable
+        			dDriver.del(Integer.parseInt(m_view.getKey())); 
         			dDriver.add(di.getKey(), di.getItem());
         			out = "Updated";
         		} catch(Exception x) { out = "Error updating node " + x.getMessage(); }
@@ -302,6 +304,8 @@ public class Controller {
         		out = "nothing";
         		break;
         	}
+        	m_view.setItem("");
+			m_view.setKey("");
         	m_view.setStatus(out);
     	}
     }
@@ -386,7 +390,7 @@ public class Controller {
 					m_view.setKeyReadOnly(true); // disable editing of key
 					textItem = dataItem.toDi(selectionPath).getItem();
 					textKey = Integer.toString(dataItem.toDi(selectionPath).getKey());
-					m_view.setStatus(selectionPath);
+					m_view.setStatus("Updateable");
 					updateState = buttonAction._TREE; 
 				} catch(Exception x){ m_view.setStatus("Cannot parse " + selectionPath); }
 				finally { // setting to blank if non readable
