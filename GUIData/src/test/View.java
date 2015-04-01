@@ -16,19 +16,8 @@ import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.MutableTreeNode;
-
-import java.awt.event.ActionEvent;
-
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.event.TreeSelectionEvent;
-
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-
 import javax.swing.JScrollPane;
-import javax.swing.tree.TreeNode;
-import javax.swing.border.BevelBorder;
 import javax.swing.tree.DefaultTreeModel;
 
 public class View {
@@ -286,8 +275,6 @@ public class View {
 		textAreaValue = new JTextArea(); 
 		textAreaValue.setBounds(246, 361, 198, 48);
 		scrollPaneTextArea.setViewportView(textAreaValue);
-		//frame.getContentPane().add(textAreaValue);
-		
 		
 		setStatus("Running");
 	}
