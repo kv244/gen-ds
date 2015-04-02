@@ -84,10 +84,10 @@ public class ArrayListStruct implements itemOp {
 
 	@Override
 	public String getItem(int iKey) throws ItemErrorException {
-		if( iKey >= _struct.size())
+		if(iKey >= _struct.size() || iKey < 0)
 			throw new ItemErrorException( "Item past size: " + Integer.toString( iKey ) + 
 					" " + Integer.toString(_struct.size()));
-		
+
 		return _struct.get( iKey );
 	}
 
@@ -143,6 +143,8 @@ public class ArrayListStruct implements itemOp {
 	// TODO modify as above to deal with sparse arrays, 
 	// or write NULLs too (current solution)
 	// the magic check is replicated in the driver
+	// TODO the check is performed when loading the file, it can be skipped here, or some refactoring anyway
+	// TODO _struct should be nulled out to avoid memory load (with lazy GC?)
 	private void loadStore() {
 		ArrayList<String> loaded;
 		BufferedReader in = null; 

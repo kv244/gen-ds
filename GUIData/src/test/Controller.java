@@ -220,7 +220,7 @@ public class Controller {
 	        		}
 	        		
         		} catch(Exception x) { //TODO this still does not get the correct message from the underlying error
-        			m_view.setStatus("Engine: " + engine + " error " + x.getMessage());
+        			m_view.setStatus("Engine: " + engine + " error " + x.getClass().getName());
         		}
         	} else { m_view.setStatus("Open canceled"); }
         }     
