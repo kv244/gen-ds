@@ -69,7 +69,8 @@ public class Controller {
      * dDriver will always be not null
      */
     public class newHandler implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
+        @Override
+		public void actionPerformed(ActionEvent e) {
         	m_view.setItem("");
 			m_view.setKey("");
         	if(dDriver != null) {
@@ -127,7 +128,8 @@ public class Controller {
     /* Quit
      */
     public class quitHandler implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
+        @Override
+		public void actionPerformed(ActionEvent e) {
         	if(dDriver!=null) {
         		int response = JOptionPane.showConfirmDialog(null, "Data in memory, click yes to quit");
         		if(response != JOptionPane.YES_OPTION)
@@ -140,7 +142,8 @@ public class Controller {
     /* Save
      */
     public class saveHandler implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
+        @Override
+		public void actionPerformed(ActionEvent e) {
         	m_view.setItem("");
 			m_view.setKey("");
         	if(dDriver == null) {
@@ -165,7 +168,8 @@ public class Controller {
      * If file load fails or not magic, nothing happens - memory and tree empty.
      */
     public class openHandler implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
+        @Override
+		public void actionPerformed(ActionEvent e) {
         	m_view.setItem("");
 			m_view.setKey("");
         	if(dDriver!=null) {
@@ -251,7 +255,8 @@ public class Controller {
 	}
     
     public class aboutHandler implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
+        @Override
+		public void actionPerformed(ActionEvent e) {
         	String out = "Using " + driver.getVersion();
         	try { 
         		if(dDriver != null)
@@ -268,7 +273,8 @@ public class Controller {
     // or if it was a tree click
     // this has to deal with issue #1, newline in text
     public class btnUpdHandler implements ActionListener {
-    	public void actionPerformed(ActionEvent e) {
+    	@Override
+		public void actionPerformed(ActionEvent e) {
     		if(dDriver == null) {
     			m_view.setStatus("No file in memory");
     			return;
@@ -315,7 +321,8 @@ public class Controller {
     // deletion from data structure, and from node 
     // (not transactional...)
     public class btnDelHandler implements ActionListener {
-    	public void actionPerformed(ActionEvent e) {
+    	@Override
+		public void actionPerformed(ActionEvent e) {
     		if(dDriver == null) {
     			m_view.setStatus("No file in memory");
     			return;
@@ -355,7 +362,8 @@ public class Controller {
     // new item
     // functionality implemented in the update handler
     public class btnNewHandler implements ActionListener {
-    	public void actionPerformed(ActionEvent e) {
+    	@Override
+		public void actionPerformed(ActionEvent e) {
     		if(dDriver == null) {
     			m_view.setStatus("No file in memory");
     			return;
@@ -375,6 +383,7 @@ public class Controller {
     // occurs when clicking on tree - open item in text box or
     // nothing if clicking the header
     public class treeClickHandler implements TreeSelectionListener {
+		@Override
 		public void valueChanged(TreeSelectionEvent e) {
 			String selectionPath = e.getNewLeadSelectionPath().toString();
 			String textItem = "";
